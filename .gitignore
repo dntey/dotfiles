@@ -30,3 +30,6 @@ project-todo.org
 emacs/.config/emacs/perspectives
 emacs/.config/emacs/image-dired
 emacs/.config/emacs/url
+emacs/.config/emacs/.org-id-locations
+emacs/.config/emacs/org-roam.db
+emacs/.config/emacs/vulpea.db

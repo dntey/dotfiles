@@ -543,7 +543,9 @@ If no region is active, inserts [[URL][]] and places cursor for description."
     "o" '(:ignore t :wk "Org")
     "o a" '(org-agenda :wk "Org agenda")
     "o e" '(org-export-dispatch :wk "Org export dispatch")
-    "o i" '(org-toggle-item :wk "Org toggle item")
+    "o i" '(:ignore t :wk "I")
+    ;; "o i t" '(org-item-toggle :wk "Toggle item")
+    ;; "o i d" '(org-id-get-create :wk "create org ID")
     "o t" '(org-todo :wk "Org todo")
     "o b t" '(org-babel-tangle :wk "Org babel tangle")
     "o T" '(org-todo-list :wk "Org todo list"))
@@ -582,9 +584,11 @@ If no region is active, inserts [[URL][]] and places cursor for description."
     "t z" '(olivetti-mode :wk "Toggle olivetti (zen) mode"))
   
   (dy/leader-keys
-    "v" '(:ignore t :wk "Version Control")
-    "v s" '(magit-status :wk "Git status")
-    "v r" '(vc-region-history :wk "Version history of region"))
+    "v" '(:ignore t :wk "Vulpea")
+    "v f" '(vulpea-find :wk "Vulpea find note")
+    "v i" '(vulpea-insert :wk "Insert note"))
+    ;; "v s" '(magit-status :wk "Git status")
+    ;; "v r" '(vc-region-history :wk "Version history of region"))
   
   
   (dy/leader-keys
@@ -630,7 +634,8 @@ If no region is active, inserts [[URL][]] and places cursor for description."
  '((julia . t)
    (latex . t)
    (shell . t)
-   (R . t)))
+   (R . t)
+   (js . t)))
 
 ;; org-tempo is not enabled by default,
 ;;allows a quick way to add source blocks.
@@ -717,7 +722,7 @@ If no region is active, inserts [[URL][]] and places cursor for description."
   :after cond-let
   :demand t
   :custom
-  (org-roam-directory "~/org-roam")
+  (org-roam-directory "~/Org")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
    '(("d" "default" plain
@@ -729,6 +734,19 @@ If no region is active, inserts [[URL][]] and places cursor for description."
          ("C-c n i" . org-roam-node-insert))
   :config
   (org-roam-setup))
+
+(use-package vulpea
+  :ensure t
+  :init
+  (vulpea-db-autosync-mode +1) ;; enable auto-sync
+  :custom
+  (vulpea-db-sync-directories '("~/Org/"))
+  (vulpea-db-location "vulpea.db" "~/Org/")
+  (vulpea-default-notes-directory "~/Org/pages/")
+  (vulpea-create-default-template
+   '(:tags ("inbox")
+           :head "#+created: %<[%Y-%m-%d]>"))
+  (vulpea-buffer-alias-property "ROAM_ALIASES"))
 
 ;; transient required by gptel
 (use-package transient
@@ -764,7 +782,7 @@ If no region is active, inserts [[URL][]] and places cursor for description."
               qwen3-30b-a3b
               gemma-3n-e4b
               qwen3-14b))
-  (setq gptel-model   'openai/gpt-5-mini
+  (setq gptel-model   'google/gemini-3-flash-preview
       gptel-backend
       (gptel-make-openai "OpenRouter"
         :host "openrouter.ai"
@@ -773,15 +791,17 @@ If no region is active, inserts [[URL][]] and places cursor for description."
         :key gptel-api-key ; function that returns key from .authinfo
         :models (m/augment-openrouter-models-list
                  '(google/gemini-2.5-flash
+                   google/gemini-3-flash-preview
                    google/gemini-3-pro-preview
                    anthropic/claude-sonnet-4.5
                    anthropic/claude-opus-4.5
                    openai/gpt-5-mini
                    openai/gpt-5
                    z-ai/glm-4.6
+                   moonshotai/kimi-k2-0905
                    qwen/qwen3-vl-235b-a22b-thinking
                    qwen/qwen3-vl-235b-a22b-instruct
-                   deepseek/deepseek-v3.2-speciale)))))
+                   deepseek/deepseek-v3.2)))))
 
 (defun m--fetch-openrouter-models ()
   "Fetch and parse the OpenRouter models API synchronously.
