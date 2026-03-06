@@ -764,6 +764,16 @@ If no region is active, inserts [[URL][]] and places cursor for description."
     "w J" '(buf-move-down :wk "Buffer move down")
     "w K" '(buf-move-up :wk "Buffer move up")
     "w L" '(buf-move-right :wk "Buffer move right"))
+
+  (general-create-definer dy/tab-bar
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "C-TAB")
+
+  (dy/tab-bar
+   "s" '(tab-bar-switch-to-tab :wk "Switch tab by name")
+   "d" '(tab-bar-detach :wk "Detach tab to new (OS) window"))
+   
   )
 #+end_src
 ** Zooming In/Out
