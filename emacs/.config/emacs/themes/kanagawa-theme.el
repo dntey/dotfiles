@@ -392,7 +392,10 @@
 								     :color nil
 								     :style flat-button)))))))
 
- `(tab-bar-tab-inactive ((,class (:background ,bg2, :foreground ,fg3))))
+ `(tab-bar-tab-inactive ((,class (:background ,bg2 :foreground ,fg3 :box (:line-width (2 . 1) :color ,bg2 :style flat-button)))))
+ `(tab-bar-tab          ((,class (:background ,waveBlue1 :foreground ,fujiWhite :box (:line-width (2 . 1) :color ,waveBlue1 :style flat-button) :weight bold))))
+ `(tab-bar-tab-group-current  ((,class (:background ,dragonGreen :foreground ,bg1 :box (:line-width (2 . 1) :color ,dragonGreen :style flat-button) :weight bold))))
+ `(tab-bar-tab-group-inactive ((,class (:background ,bg3 :foreground ,fg4 :box (:line-width (2 . 1) :color ,bg3 :style flat-button)))))
 
   (when (boundp 'font-lock-regexp-face)
     (custom-theme-set-faces
