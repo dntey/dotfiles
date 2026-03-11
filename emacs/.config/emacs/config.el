@@ -115,6 +115,86 @@
 ;; truncate long visual lines in dired buffers
 (add-hook 'dired-mode-hook (lambda () (setq truncate-lines t)))
 
+(defun my/tab-bar-auto-hide ()
+  "Automatically hide tab-bar when there's only one tab."
+  (if (= (length (tab-bar-tabs)) 1)
+      (tab-bar-mode -1)
+    (tab-bar-mode 1)))
+
+(add-hook 'tab-bar-tab-post-open-hook #'my/tab-bar-auto-hide)
+(add-hook 'tab-bar-tab-pre-close-hook #'my/tab-bar-auto-hide)
+
+(defvar my/tab-bar-icons
+  '((org-mode . "\xf0726")
+    (python-mode . "\xe73c")
+    (inferior-python-mode . "\xe73c")
+    (ess-r-mode . "\xf07d4")
+    (inferior-ess-r-mode . "\xf07d4")
+    (emacs-lisp-mode . "\xe628")
+    (lisp-interaction-mode . "\xe628")
+    (markdown-mode . "\xf48a")
+    (text-mode . "\xf0219")
+    (dired-mode . "\xf021b")
+    (vterm-mode . "\xf489")
+    (term-mode . "\xf489")
+    (shell-mode . "\xf489")
+    (eshell-mode . "\xf489")
+    (fundamental-mode . "\xf0219")
+    (message-mode . "\xf0361")
+    (special-mode . "\xf0361")
+    (help-mode . "\xf02d7")
+    (prog-mode . "\xf0134"))
+  "Mapping of major modes to Nerd Font icons (using Unicode codepoints).")
+
+(defun my/tab-bar-get-icon-for-buffer (buffer)
+  "Get icon for BUFFER based on its major mode."
+  (if (bufferp buffer)
+      (with-current-buffer buffer
+        (or (cdr (assoc major-mode my/tab-bar-icons))
+            (cdr (assoc (get major-mode 'derived-mode-parent) my/tab-bar-icons))
+            "\xf0219"))
+    "\xf0219"))
+
+(defun my/tab-bar-tab-name-format (tab i)
+  "Format tab name with icon, index, and truncated name."
+  (let* ((tab-bar-separator "")
+         (current-p (eq (car tab) 'current-tab))
+         (tab-index (number-to-string i))
+         (tab-buffer (alist-get 'buffer tab))
+         (buf (cond
+               ((bufferp tab-buffer) tab-buffer)
+               ((stringp tab-buffer) (get-buffer tab-buffer))
+               (current-p (window-buffer))
+               (t nil)))
+         (name (or (and (bufferp buf) (buffer-name buf))
+                   (alist-get 'name tab)
+                   "unnamed"))
+         (max-len 20)
+         (truncated-name (if (> (length name) max-len)
+                             (concat (substring name 0 max-len) "…")
+                           name))
+         (icon (my/tab-bar-get-icon-for-buffer buf))
+         (modified-p (and (bufferp buf)
+                          (buffer-modified-p buf)))
+         (modified-indicator (if modified-p "●" "")))
+    (concat
+     (propertize (concat " " tab-index " " icon " ")
+                 'face (if current-p 'tab-bar-tab 'tab-bar-tab-inactive))
+     (propertize truncated-name
+                 'face (if current-p 'tab-bar-tab 'tab-bar-tab-inactive))
+     (propertize (concat modified-indicator " ")
+                 'face (if current-p 
+                          'tab-bar-tab
+                        'tab-bar-tab-inactive)))))
+
+(setq tab-bar-tab-name-format-function #'my/tab-bar-tab-name-format)
+(setq tab-bar-auto-width nil)
+(setq tab-bar-tab-name-truncated-max 25)
+
+;; Enable tab-bar-mode initially
+(tab-bar-mode 1)
+(my/tab-bar-auto-hide)
+
 (defun insert-today-date ()
   "Insert today's date at point in YYYY-MM-DD format."
   (interactive)
