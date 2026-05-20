@@ -69,18 +69,19 @@ alt-shift-j  = 'move down'
 alt-shift-k    = 'move up'
 alt-shift-l = 'move right'
 
-cmd-shift-left  = ['join-with left', 'mode main']
-cmd-shift-down  = ['join-with down', 'mode main']
-cmd-shift-up    = ['join-with up', 'mode main']
-cmd-shift-right = ['join-with right', 'mode main']
+ctrl-leftSquareBracket  = ['join-with left', 'mode main']
+# cmd-shift-down  = ['join-with down', 'mode main']
+# cmd-shift-up    = ['join-with up', 'mode main']
+ctrl-rightSquareBracket = ['join-with right', 'mode main']
 
 # Resize Window
 alt-minus = 'resize smart -50'
 alt-equal = 'resize smart +50'
 
 # App Launchers
-# alt-enter = 'exec-and-forget kitty --single-instance ~'
-# alt-b = 'exec-and-forget firefox'
+alt-enter = 'exec-and-forget kitten quick-access-terminal ~'
+# alt-z = 'exec-and-forget open -a kitty.app -n'
+alt-b = 'exec-and-forget firefox'
 # alt-shift-n = 'exec-and-forget Logseq'
 # alt-e = 'exec-and-forget emacs'
 
