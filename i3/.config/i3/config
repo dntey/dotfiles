@@ -8,7 +8,7 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock-fancy
 exec syncthing
 exec --no-startup-id picom --config ~/.config/picom/picom.conf -b
 exec --no-startup-id nm-applet
-exec --no-startup-id feh --randomize --bg-fill --recursive ~/Media/Wallpapers/Places
+exec --no-startup-id feh --randomize --bg-fill --recursive ~/Pictures/Wallpapers/Places
 # add side monitor as secondary display
 # exec --no-startup-id xrandr --output DisplayPort-2 --auto --left-of DisplayPort-0
 
@@ -55,9 +55,10 @@ bindsym $mod+Tab workspace back_and_forth
 bindsym Mod4+Right workspace next 
 bindsym Mod4+Left workspace prev
 bindsym $mod+f fullscreen toggle
-bindsym $mod+. floating toggle
+bindsym $mod+button2 --whole-window floating toggle
 # change focus between tiling / floating windows
-# bindsym $mod+space focus mode_toggle
+bindsym $mod+period floating toggle
+bindsym $mod+Shift+period focus mode_toggle
 
 # Layout Orientation
 bindsym $mod+t layout tabbed
@@ -87,7 +88,7 @@ bindsym Mod1+Shift+4 exec spectacle --region
 bindsym $mod+Shift+n exec kitty -e nvim
 
 # Launcher menus in rofi
-bindsym $mod+Shift+f exec --no-startup-id kitty --class "fzf-menu" --directory ~ -e ~/dotfiles/scripts/fzf-launcher
+bindsym $mod+Shift+f exec --no-startup-id kitty --class "fzf-menu" --directory ~ -e yazi
 for_window [class="fzf-menu"] floating enable, resize set 800 600, move position center
 
 # System Controls
