@@ -1,3 +1,9 @@
+# dumb prompt for Emacs TRAMP connections
+if [[ "$TERM" == "dumb" ]]; then
+  PS1='$ '
+  return
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -9,6 +15,7 @@ if [[ -f "/opt/homebrew/bin/brew" ]] then
   # If you're using macOS, you'll want this enabled
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
+export PATH='/home/linuxbrew/.linuxbrew/bin':$PATH
 
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -72,8 +79,8 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-alias ls='gls --color --hyperlink=auto'
-alias la='gls -a --color --hyperlink=auto'
+alias ls='ls --color --hyperlink=auto'
+alias la='ls -a --color --hyperlink=auto'
 alias lt='eza -Tl'
 alias c='clear'
 alias skim='/Applications/Skim.app/Contents/MacOS/Skim'
@@ -101,7 +108,7 @@ bindkey -e
 export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
 
 # mactex install location
-eval "$(/usr/libexec/path_helper)"
+# eval "$(/usr/libexec/path_helper)"
 
 path=('/Users/dante/Library/Python/3.9/bin' $path)
 export PATH
@@ -115,9 +122,7 @@ export PATH
 
 # <<< juliaup initialize <<<
 
-source ~/.chatGPT_APIKEY
 export GOPATH=$HOME/go
-export PATH=/Users/dante/.juliaup/bin:/Users/dante/Library/Python/3.9/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/TeX/texbin:/Applications/quarto/bin:/Users/dante/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/dante/.juliaup/bin:/Users/dante/Library/Python/3.9/bin:/Users/dante/.local/share/zinit/polaris/bin:/Applications/kitty.app/Contents/MacOS:/bin:$GOPATH/bin
 # export PATH=$HOME/.docker/bin
 
 # Added by LM Studio CLI (lms)
