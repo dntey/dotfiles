@@ -136,9 +136,3 @@ include diff.conf
 include open-actions.conf
 
 notify_on_cmd_finish invisible 20
-
-
-# BEGIN_KITTY_THEME
-# Alabaster
-include current-theme.conf
-# END_KITTY_THEME

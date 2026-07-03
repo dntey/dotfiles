@@ -63,7 +63,6 @@ export EDITOR="nvim"
 bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
-bindkey '^f' yazi
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
@@ -82,7 +81,6 @@ alias icat='kitten icat'
 alias diff='kitten diff'
 alias gitdiff='git difftool --no-symlinks --dir-diff'
 alias wordlelist="curl -s https://raw.githubusercontent.com/tabatkins/wordle-list/main/words"
-alias cat="bat"
 alias ssh="kitten ssh"
 alias ddgr="BROWSER=w3m ddgr -n 5"
 alias qvim="NVIM_APPNAME=quarto-nvim-kickstarter nvim"
@@ -95,7 +93,9 @@ alias csv="csvlens"
 
 eval "$(zoxide init --cmd cd zsh)"
 # enable vi mode
-bindkey -v
+# bindkey -v
+# enable emacs mode
+bindkey -e
 
 # enable imagemagick to be found from homebrew?
 export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
@@ -125,3 +125,8 @@ export PATH="$PATH:/Users/dante/.lmstudio/bin"
 # End of LM Studio CLI section
 #
 export PATH='/Users/dante/.duckdb/cli/latest':$PATH
+
+export PATH='/Users/dante/.config/emacs/bin':$PATH
+
+# Hermes Agent — ensure ~/.local/bin is on PATH
+export PATH="$HOME/.local/bin:$PATH"
