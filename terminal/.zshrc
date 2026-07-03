@@ -79,22 +79,13 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-alias ls='ls --color --hyperlink=auto'
 alias la='ls -a --color --hyperlink=auto'
 alias lt='eza -Tl'
-alias c='clear'
-alias skim='/Applications/Skim.app/Contents/MacOS/Skim'
-alias icat='kitten icat'
-alias diff='kitten diff'
 alias gitdiff='git difftool --no-symlinks --dir-diff'
 alias wordlelist="curl -s https://raw.githubusercontent.com/tabatkins/wordle-list/main/words"
-alias ssh="kitten ssh"
 alias ddgr="BROWSER=w3m ddgr -n 5"
-alias qvim="NVIM_APPNAME=quarto-nvim-kickstarter nvim"
-alias tvim="NVIM_APPNAME=neotex/nvim nvim"
 alias rg="rg --hyperlink-format=kitty"
 alias du="du -sh"
-alias csv="csvlens"
 
 # Shell integrations
 
@@ -104,34 +95,5 @@ eval "$(zoxide init --cmd cd zsh)"
 # enable emacs mode
 bindkey -e
 
-# enable imagemagick to be found from homebrew?
-export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-
-# mactex install location
-# eval "$(/usr/libexec/path_helper)"
-
-path=('/Users/dante/Library/Python/3.9/bin' $path)
-export PATH
-
-# >>> juliaup initialize >>>
-
-# !! Contents within this block are managed by juliaup !!
-
-path=('/Users/dante/.juliaup/bin' $path)
-export PATH
-
-# <<< juliaup initialize <<<
-
-export GOPATH=$HOME/go
-# export PATH=$HOME/.docker/bin
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/dante/.lmstudio/bin"
-# End of LM Studio CLI section
-#
-export PATH='/Users/dante/.duckdb/cli/latest':$PATH
-
-export PATH='/Users/dante/.config/emacs/bin':$PATH
-
-# Hermes Agent — ensure ~/.local/bin is on PATH
-export PATH="$HOME/.local/bin:$PATH"
+# add shell scripts as executables
+export PATH="$HOME/Sync/Resources/scripts:$PATH"
