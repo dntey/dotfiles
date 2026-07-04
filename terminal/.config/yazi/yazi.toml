@@ -18,36 +18,3 @@ max_width       = 2400
 max_height      = 3600
 image_quality   = 75
 
-[opener]
-nvim = [
-  { run = '/opt/homebrew/bin/nvim "$@"', block = true, for = "unix"},
-]
-fancycat = [
-  { run = '/opt/homebrew/bin/fancy-cat "$0"', block = true, desc = "Read" },
-]
-icat = [
-  { run = 'kitten icat "$@"', block = true, desc = "read" },
-]
-skim = [
-  { run = '/Applications/Skim.app/Contents/MacOS/Skim "$@"', orphan = true, desc = "Read" , for = "macos" },
-]
-csv = [
-  { run = '/opt/homebrew/bin/csvlens "$@"', block = true },
-]
-my-fallback = [
-{ run = 'open "$@"', desc = "Open"},
-]
-
-[open]
-rules = [
-  { name = "*.pdf", use = "skim" },
-  # { name = "*.org", use = "emacs" },
-  { name = "*.csv", use = "csv"},
-  { mime = "folder/*", use = "shell --block --orphan" },
-  { mime = "text/*", use = "nvim" },
-  { mime = "image/*", use = "fancycat" },
-]
-append_rules = [
-  { name = "*", use = "open"},
-]
-

@@ -7,11 +7,11 @@ filetype plugin on
 " file line numbers displayed to the left
 " underline line of current cursor position
 set nowrap
-set relativenumber
+" set relativenumber
 set cursorline
 
 " insert 2 spaces for each tab
-set tabstop=2
+set tabstop=4
 set expandtab
 
 " don't save backup files
@@ -28,25 +28,6 @@ set path+=**
 
 " TAG JUMPING
 command! MakeTags !ctags -R
-
-" FILE BROWSING
-" {{{
-let g:netrw_banner=0 " disable netrw banner
-let g:netrw_browse_split=4 " open in prior window
-let g:netrw_altv=1 " open splits to the right
-let g:netrw_liststyle=3 " treeview
-"let g:netrw_list_hide=netrw_gitignore#Hide()
-
-"}}}
-
-" SNIPPETS
-" {{{
-
-nnoremap \nfgame :-1read $HOME/.vim/.gametable.tex<CR>2jf&i
-nnoremap \qframe :-1read $HOME/.vim/.quarto-frame.qmd<CR>A
-nnoremap \qcol :-1read $HOME/.vim/.quarto-columns.qmd<CR>2ji
-
-" }}}
 
 " PLUGINS
 " {{{
@@ -105,22 +86,4 @@ augroup cursor_off
   autocmd WinEnter * set cursorline
 augroup END
 
-" }}}
-
-" STATUS LINE 
-" {{{
-
-" Status bar code goes here
-
-" }}}
-
-" PLUGINS
-" {{{
-call plug#begin('~/.vim/plugged')
-
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
-Plug 'rainglow/vim'
-
-call plug#end()
 " }}}
