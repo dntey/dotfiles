@@ -97,3 +97,7 @@ bindkey -e
 
 # add shell scripts as executables
 export PATH="$HOME/Sync/Resources/scripts:$PATH"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# make apps like emacs respect XDG config?
+export XDG_CONFIG_HOME="$HOME/.config"
