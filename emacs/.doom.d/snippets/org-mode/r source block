@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: r source block
+# key: <r
+# --
+#+begin_src R :session *R*
+  $1
+#+end_src

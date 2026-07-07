@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: R figure
+# key: <rfig
+# --
+#+begin_src R :exports results :results graphics file :file $1
+  $2
+#+end_src
