@@ -13,7 +13,7 @@ exec --no-startup-id feh --randomize --bg-fill --recursive ~/Pictures/Wallpapers
 # exec --no-startup-id xrandr --output DisplayPort-2 --auto --left-of DisplayPort-0
 
 # I3 BAR
-font pango: System San Francisco Display 24
+font pango: UbuntuMono Nerd Font 24
 title_align center
 
 # SETTINGS
@@ -75,8 +75,8 @@ bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
 # App Launchers
-bindsym Mod4+space exec rofi -show drun -matching fuzzy -sort true
-bindsym Mod4+d exec rofi -show run 
+bindsym mod+space exec vicinae toggle
+bindsym Mod4+d exec vicinae toggle
 bindsym $mod+b exec firefox
 bindsym $mod+Return exec kitty
 # bindsym $mod+n exec /home/dante/Applications/Logseq-linux-x64-0.10.9.AppImage
@@ -244,7 +244,7 @@ bar {
   status_command i3blocks -c ~/.config/i3blocks/config
   # output DisplayPort-0
 	position top
-	font pango:System San Francisco Display 24
+	font pango:UbuntuMono Nerd Font 24
 	colors {
 		background $bg-color
 	 	separator #54546d
