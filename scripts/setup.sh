@@ -80,7 +80,7 @@ if [ "$PACKAGE_MANAGER" == "dnf" ]; then
         stow \
         emacs \
         neovim \
-        git curl ripgrep fd-find \
+        git curl ripgrep fd-find fzf \
         R
 else
     sudo apt update -y
@@ -93,7 +93,7 @@ else
         stow \
         emacs \
         neovim \
-        git curl ripgrep findutils \
+        git curl ripgrep findutils fzf \
         r-base
 fi
 
