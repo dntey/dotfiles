@@ -6,7 +6,7 @@ if [ -f /etc/os-release ]; then
     source /etc/os-release
     # $ID is set in the sourced file (e.g., 'fedora', 'debian', 'ubuntu')
     case "$ID" in
-        fedora|rhel|centos)
+        fedora|rhel|centos|fedora-asahi-remix)
             echo "Detected Fedora/RHEL-based system. Using dnf."
             PACKAGE_MANAGER="dnf"
             TAILSCALE_REPO_URL="https://pkgs.tailscale.com/stable/fedora/tailscale.repo"
@@ -54,19 +54,22 @@ else
     curl -fsSL https://pkgs.tailscale.com/stable/debian/trixie.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list
 fi
 
-if $REPO_CHECK; then
-    echo "Tailscale repo already exists, skipping repo setup..."
-else
-    echo "Adding Tailscale repo..."
-    $ADD_REPO_CMD
-    
-    # Install tailscale
-    if [ "$PACKAGE_MANAGER" == "dnf" ]; then
-        sudo dnf install -y tailscale
-    else
-        sudo apt-get update && sudo apt-get install -y tailscale
-    fi
-fi
+# TODO breaks here with error: Unknown argument "'^tailscale-stable'" for command "repolist". Add "--help" for more information about the arguments.
+# - [ ] change check to package manager check and update accordingly
+
+# if $REPO_CHECK; then
+#     echo "Tailscale repo already exists, skipping repo setup..."
+# else
+#     echo "Adding Tailscale repo..."
+#     $ADD_REPO_CMD
+#     
+#     # Install tailscale
+#     if [ "$PACKAGE_MANAGER" == "dnf" ]; then
+#         sudo dnf install -y tailscale
+#     else
+#         sudo apt-get update && sudo apt-get install -y tailscale
+#     fi
+# fi
 
 # --- Update System and Install Native Packages ---
 if [ "$PACKAGE_MANAGER" == "dnf" ]; then
@@ -79,7 +82,6 @@ if [ "$PACKAGE_MANAGER" == "dnf" ]; then
         zoxide \
         stow \
         emacs \
-        neovim \
         git curl ripgrep fd-find \
         R
 else
@@ -92,7 +94,6 @@ else
         zoxide \
         stow \
         emacs \
-        neovim \
         git curl ripgrep findutils \
         r-base
 fi
