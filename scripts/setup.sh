@@ -82,7 +82,8 @@ if [ "$PACKAGE_MANAGER" == "dnf" ]; then
         zoxide \
         stow \
         emacs \
-        git curl ripgrep fd-find \
+        neovim \
+        git curl ripgrep fd-find fzf \
         R
 else
     sudo apt update -y
@@ -94,7 +95,8 @@ else
         zoxide \
         stow \
         emacs \
-        git curl ripgrep findutils \
+        neovim \
+        git curl ripgrep findutils fzf \
         r-base
 fi
 
