@@ -14,56 +14,72 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Handle click events
+if [ "$BLOCK_BUTTON" = "1" ]; then
+    # left click: open htop
+    i3-msg -q exec "kitty htop" >/dev/null 2>&1 &
+fi
+
 TYPE="${BLOCK_INSTANCE:-mem}"
 
 awk -v type=$TYPE '
 /^MemTotal:/ {
-	mem_total=$2
+    mem_total=$2
 }
 /^MemFree:/ {
-	mem_free=$2
+    mem_free=$2
 }
 /^Buffers:/ {
-	mem_free+=$2
+    mem_free+=$2
 }
 /^Cached:/ {
-	mem_free+=$2
+    mem_free+=$2
 }
 /^SwapTotal:/ {
-	swap_total=$2
+    swap_total=$2
 }
 /^SwapFree:/ {
-	swap_free=$2
+    swap_free=$2
 }
 END {
-	if (type == "swap") {
-		free=swap_free/1024/1024
-		used=(swap_total-swap_free)/1024/1024
-		total=swap_total/1024/1024
-	} else {
-		free=mem_free/1024/1024
-		used=(mem_total-mem_free)/1024/1024
-		total=mem_total/1024/1024
-	}
+    if (type == "swap") {
+        free=swap_free/1024/1024
+        used=(swap_total-swap_free)/1024/1024
+        total=swap_total/1024/1024
+    } else {
+        free=mem_free/1024/1024
+        used=(mem_total-mem_free)/1024/1024
+        total=mem_total/1024/1024
+    }
 
-	pct=0
-	if (total > 0) {
-		pct=used/total*100
-	}
+    pct=0
+    if (total > 0) {
+        pct=used/total*100
+    }
 
-	# full text
-	# printf("%.1fG/%.1fG (%.f%%)\n", used, total, pct)
+    # full text
+    # printf("%.1fG/%.1fG (%.f%%)\n", used, total, pct)
 
-	# short text
-	printf("%.f%%\n", pct)
+    # short text
+    printf("%.f%%\n", pct)
 
-	# color
-	if (pct > 90) {
-		print("#FF0000")
-	} else if (pct > 80) {
-		print("#FFAE00")
-	} else if (pct > 70) {
-		print("#FFF600")
-	}
+    # short text
+    printf("%.1fG/%.1fG\n", used, total)
+
+    # color
+    if (pct > 90) {
+        print("#223249")
+    } else if (pct > 70) {
+        print("#2D4F67")
+    } else if (pct > 50) {
+        print("#658594")
+    } else if (pct > 30) {
+        print("#7FB4CA")
+    } else if (pct < 30) {
+        print("#b5cbd2")
+    }
+
+    # background
+    print("#54546D")
 }
 ' /proc/meminfo

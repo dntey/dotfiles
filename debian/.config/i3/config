@@ -8,9 +8,11 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock-fancy
 exec syncthing
 exec --no-startup-id picom --config ~/.config/picom/picom.conf -b
 exec --no-startup-id nm-applet
-exec --no-startup-id feh --randomize --bg-fill --recursive ~/Pictures/Wallpapers/Places
+exec --no-startup-id feh --randomize --bg-fill --recursive ~/Media/Wallpapers/Places
 # add side monitor as secondary display
 # exec --no-startup-id xrandr --output DisplayPort-2 --auto --left-of DisplayPort-0
+exec --no-startup-id vicinae server
+exec --no-startup-id gammastep -b 1.0:0.5
 
 # I3 BAR
 font pango: UbuntuMono Nerd Font 24
@@ -19,6 +21,7 @@ title_align center
 # SETTINGS
 focus_wrapping no
 tiling_drag modifier titlebar
+focus_on_window_activation focus
 
 # Layout
 hide_edge_borders smart
@@ -27,9 +30,9 @@ default_orientation horizontal
 focus_follows_mouse no
 
 # Gaps
-default_border pixel 0
-gaps inner 8px
-gaps outer 8px
+default_border pixel 2
+gaps inner 12px
+gaps outer 12px
 
 # KEYBINDINGS
 # All possible modifiers: cmd == Mod4, alt == Mod1, Ctrl, Shift
@@ -52,8 +55,6 @@ bindsym Mod4+q kill
 
 # Layout Bindings 
 bindsym $mod+Tab workspace back_and_forth
-bindsym Mod4+Right workspace next 
-bindsym Mod4+Left workspace prev
 bindsym $mod+f fullscreen toggle
 bindsym $mod+button2 --whole-window floating toggle
 # change focus between tiling / floating windows
@@ -69,13 +70,21 @@ bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
+bindsym $mod+Right focus right
+bindsym $mod+Left focus left
+bindsym $mod+Up focus up
+bindsym $mod+Down focus right
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
 
 # App Launchers
-bindsym mod+space exec vicinae toggle
+bindsym $mod+o exec vicinae toggle
 bindsym Mod4+d exec vicinae toggle
 bindsym $mod+b exec firefox
 bindsym $mod+Return exec kitty
@@ -140,16 +149,22 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # WORKSPACES
-set $ws1 "1:  " 
-set $ws2 "2:  " 
-set $ws3 "3: 󰗚 " 
-set $ws4 "4:  " 
-set $ws5 "5: 󰭹 " 
-set $ws6 "6: 󰎳 " 
-set $ws7 "7: 󰎶 " 
-set $ws8 "8: 󰎹 " 
-set $ws9 "9: 󰎼 " 
-set $ws10 "10: 󰽽 "
+# set $ws0 "0: "
+# set $ws1 "1:  "
+# set $ws2 "2: "
+# set $ws3 "3: 󰗚"
+# set $ws4 "4: "
+# set $ws5 "5: 󰭹"
+set $ws0 "0: 󰎡"
+set $ws1 "1: 󰎤"
+set $ws2 "2: 󰎧"
+set $ws3 "3: 󰎪"
+set $ws4 "4: 󰎭"
+set $ws5 "5: 󰎱"
+set $ws6 "6: 󰎳"
+set $ws7 "7: 󰎶"
+set $ws8 "8: 󰎹"
+set $ws9 "9: 󰎼"
 # add calendar for something that works on Linux?
 bindsym $mod+1 workspace number $ws1 
 bindsym $mod+2 workspace number $ws2 
@@ -160,7 +175,7 @@ bindsym $mod+6 workspace number $ws6
 bindsym $mod+7 workspace number $ws7 
 bindsym $mod+8 workspace number $ws8 
 bindsym $mod+9 workspace number $ws9 
-bindsym $mod+0 workspace number $ws10 
+bindsym $mod+0 workspace number $ws0 
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
 bindsym $mod+Shift+3 move container to workspace number $ws3
@@ -170,7 +185,7 @@ bindsym $mod+Shift+6 move container to workspace number $ws6
 bindsym $mod+Shift+7 move container to workspace number $ws7
 bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
-bindsym $mod+Shift+0 move container to workspace number $ws10
+bindsym $mod+Shift+0 move container to workspace number $ws0
 # bindsym $mod+Shift+f move container to workspace next 
 # bindsym $mod+Shift+b  move container to workspace prev
 
@@ -184,12 +199,17 @@ workspace $ws6 output DisplayPort-2
 workspace $ws7 output DisplayPort-2
 workspace $ws8 output DisplayPort-2
 workspace $ws9 output DisplayPort-2
-workspace $ws10 output DisplayPort-0
+workspace $ws0 output DisplayPort-0
+
+# Float all windows on specific workspaces
+for_window [workspace=$ws0] floating enable
 
 # Float these App Windows by Default
 for_window [title="obs"] floating enable
 for_window [title="r_x11"] floating enable
 for_window [title="Thunar"] floating enable
+for_window [title="htop"] floating enable
+for_window [title="Filelight"] floating enable
 # for kde plasma integration 
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
@@ -208,23 +228,27 @@ for_window [class="(?i)*nextcloud*"] floating disable
 for_window [class="plasmashell" window_type="notification"] border none, move right 700px, move down 450px
 no_focus [class="plasmashell" window_type="notification"] 
 for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
-for_window [class="dolphin"] floating enable
-
 # show picture-in-picture across all workspaces
 for_window [title="Picture-in-Picture"] sticky enable
 
-# Assing Application Windows by Workspace
-# assign [class="(?)firefox"] $ws1 
-# assign [class="kitty"] $ws2
-# assign [class="logseq"] $ws3
-# assign [class="Emacs"] $ws4
-# assign [class="WhatsApp"] $ws5
-# assign [class="steam"] $ws6
-# assign [class="zotero"] $ws7
-# assign [class="rstudio"] $ws8
-# assign [class="vscodium"] $ws8
+# GNOME Apps integration
+for_window [class="org.gnome.Nautilus"] floating enable
+for_window [class="gnome-system-monitor"] floating enable
+for_window [class="gnome-text-editor"] floating enable
+for_window [class="org.gnome.Characters"] floating enable
 
-set $bg-color 	         #1a1a22
+# Assing Application Windows by Workspace
+assign [class="(?)firefox"] $ws1 
+# assign [class="kitty"] $ws2
+assign [class="Emacs"] $ws4
+# assign [class="WhatsApp"] $ws5
+assign [class="steam"] $ws6
+assign [class="zotero"] $ws3
+assign [class="calibre"] $ws3
+assign [class="(?i)^org\.gnome\.evolution$"] $ws5
+assign [class="(?i)^gnome-calendar$"] $ws5
+
+set $bg-color            #1a1a22
 set $inactive-bg-color   #1a1a22
 set $active-border-color #223249
 set $text-color          #C8C093
@@ -243,15 +267,20 @@ client.background       #ffffff
 bar {
   status_command i3blocks -c ~/.config/i3blocks/config
   # output DisplayPort-0
-	position top
-	font pango:UbuntuMono Nerd Font 24
-	colors {
-		background $bg-color
-	 	separator #54546d
-		#                  border             background         text
-		focused_workspace  $bg-color          $bg-color          $text-color
-		inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
-		urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
-	}
+  position bottom
+  font pango:JetBrainsMono Nerd Font 28
+  workspace_min_width 60
+  mode hide
+  hidden_state hide
+  modifier $mod
+  colors {
+    background $bg-color
+    separator #54546d
+    statusline #ff9e3b
+    #                  border             background         text
+    focused_workspace  $bg-color          $bg-color          $text-color
+    inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
+    urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
+  }
   strip_workspace_numbers yes
 }

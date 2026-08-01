@@ -14,6 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Handle click events
+if [ "$BLOCK_BUTTON" = "1" ]; then
+    # left click: open file manager
+    i3-msg -q exec "filelight $HOME" >/dev/null 2>&1 &
+    # i3-msg -q exec "kitty yazi $HOME" >/dev/null 2>&1 &
+fi
+
 DIR="${DIR:-$BLOCK_INSTANCE}"
 DIR="${DIR:-$HOME}"
 ALERT_LOW="${ALERT_LOW:-$1}"
@@ -26,8 +33,8 @@ fi
 
 df -h -P $LOCAL_FLAG "$DIR" | awk -v label="$LABEL" -v alert_low=$ALERT_LOW '
 /\/.*/ {
-	# full text
-	print label $4
+	# full text (Available / Total)
+	print label $3 "/" $2
 
 	# short text
 	print label $4
