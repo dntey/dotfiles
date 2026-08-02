@@ -16,12 +16,12 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font                (font-spec :family "Liga SFMono Nerd Font"
-                                          :size 12 :weight 'medium)
-      doom-variable-pitch-font (font-spec :family "Georgia"
-                                          :size 14 :weight 'medium)
-      doom-big-font            (font-spec :family "Liga SFMono Nerd Font"
-                                          :size 16))
+(setq doom-font                (font-spec :family "SFMono Nerd Font"
+                                          :size 18 :weight 'medium)
+      ;; doom-variable-pitch-font (font-spec :family "Georgia"
+      ;;                                     :size 14 :weight 'medium)
+      doom-big-font            (font-spec :family "SFMono Nerd Font"
+                                          :size 24))
 
 ;; ── Theme ─-───────────────────────────────────────────────────────────────────
 ;; avoid asking for whether all local themes are safe or not
@@ -80,12 +80,11 @@
 
 (global-set-key (kbd "C-x 1") #'toggle-delete-other-windows)
 
-
-;; ── Theme Customization (Kanagawa) ───────────────────────────────────────────
-
+;; ── keybindings ───────────────────────────────────────────
 (map! :leader
       :prefix ("b" . "Buffer")
       :desc "Switch buffer" "s" #'switch-to-buffer)
+(unpin!)
 
 ;; ── Theme Customization (Kanagawa) ───────────────────────────────────────────
 
@@ -461,3 +460,12 @@ Returns a list of (symbol . plist).  If a model is missing, returns (id)."
 
 ;; mixed-pitch is already provided by :ui zen, just add your hook
 (add-hook! org-mode #'mixed-pitch-mode)
+
+;; Enable Arabic and Bidirectional text support
+(+bidi-global-mode 1)
+(setq-default bidi-display-reordering t)
+(setq +bidi-want-smart-fontify t)
+(setq bidi-paragraph-direction 'right-to-left)
+
+;; Set specific font for Arabic characters (change "Amiri" to your preferred font)
+(set-fontset-font t 'arabic (font-spec :family "AlArabiya" :size 18))
