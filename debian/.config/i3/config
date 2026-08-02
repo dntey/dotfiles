@@ -3,19 +3,18 @@
 
 # STARTUP COMMANDS
 exec --no-startup-id dex --autostart --environment i3
-exec xinput set-prop "PixArt USB Optical Mouse" "libinput Natural Scrolling Enabled" 1
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock-fancy 
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock-fancy
 exec syncthing
 exec --no-startup-id picom --config ~/.config/picom/picom.conf -b
 exec --no-startup-id nm-applet
-exec --no-startup-id feh --randomize --bg-fill --recursive ~/Media/Wallpapers/Places
+exec --no-startup-id feh --randomize --bg-fill --recursive ~/Sync/Wallpapers/Places
 # add side monitor as secondary display
 # exec --no-startup-id xrandr --output DisplayPort-2 --auto --left-of DisplayPort-0
 exec --no-startup-id vicinae server
 exec --no-startup-id gammastep -b 1.0:0.5
 
 # I3 BAR
-font pango: UbuntuMono Nerd Font 24
+font pango: Ubuntu Mono Nerd Font 24
 title_align center
 
 # SETTINGS
@@ -55,15 +54,14 @@ bindsym Mod4+q kill
 
 # Layout Bindings 
 bindsym $mod+Tab workspace back_and_forth
-bindsym $mod+f fullscreen toggle
 bindsym $mod+button2 --whole-window floating toggle
 # change focus between tiling / floating windows
 bindsym $mod+period floating toggle
 bindsym $mod+Shift+period focus mode_toggle
 
 # Layout Orientation
-bindsym $mod+t layout tabbed
-bindsym $mod+s layout toggle split
+bindsym $mod+Shift+t layout tabbed
+bindsym $mod+Shift+s layout toggle split
 
 # Window Navigation
 bindsym $mod+h focus left
@@ -83,32 +81,50 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
+# remapped copy paste
+# as suggested by u/-Pelvis- here: https://www.reddit.com/r/i3wm/comments/ap7d1o/changing_copy_paste_keys_to_be_like_mac/
+bindsym --release $mod+c exec "xdotool key --clearmodifiers ctrl+c"
+bindsym --release $mod+v exec "xdotool key --clearmodifiers ctrl+v"
+
+# Vicinae launchers
+bindsym $mod+s exec vicinae toggle
+bindsym $mod+space exec vicinae toggle
+bindsym $mod+Shift+v exec vicinae vicinae://launch/clipboard/history
+bindsym $mod+f exec vicinae vicinae://launch/files/search
+bindsym $mod+a exec vicinae vicinae://launch/calculator/history
+bindsym $mod+b exec vicinae vicinae://launch/shortcuts/sct-e1662856809f
+
 # App Launchers
-bindsym $mod+o exec vicinae toggle
-bindsym Mod4+d exec vicinae toggle
-bindsym $mod+b exec firefox
-bindsym $mod+Return exec kitty
-# bindsym $mod+n exec /home/dante/Applications/Logseq-linux-x64-0.10.9.AppImage
-bindsym $mod+e exec emacs
-bindsym $mod+Shift+s exec firefox http://127.0.0.1:8384/#
-bindsym $mod+m exec kitty spotify_player
-bindsym $mod+Shift+m exec --no-startup-id MultiMC
-bindsym Mod1+Shift+4 exec spectacle --region
-bindsym $mod+Shift+n exec kitty -e nvim
+bindsym $mod+Shift+b exec firefox
+bindsym $mod+t exec kitty
+bindsym $mod+Shift+e exec emacs
+# bindsym $mod+m exec kitty spotify_player
+# bindsym Mod1+Shift+4 exec spectacle --region
 
 # Launcher menus in rofi
-bindsym $mod+Shift+f exec --no-startup-id kitty --class "fzf-menu" --directory ~ -e yazi
-for_window [class="fzf-menu"] floating enable, resize set 800 600, move position center
+# bindsym $mod+Shift+f exec --no-startup-id kitty --class "fzf-menu" --directory ~ -e yazi
+# for_window [class="fzf-menu"] floating enable, resize set 800 600, move position center
 
 # System Controls
 # activate lockscreen
 bindsym Mod4+Escape exec i3lock-fancy
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec light -A 10 # increase screen brightness
-bindsym XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
-# Redshift
-bindsym Mod4+F1 exec redshift -P -O 3000
-bindsym Mod4+F2 exec redshift -P -O 8000
+bindsym XF86MonBrightnessUp exec brightnessctl set +8% # increase screen brightness
+bindsym XF86MonBrightnessDown exec brightnessctl set 8%- # decrease screen brigrtness
+bindsym $mod+F1 exec brightnessctl set 8%- # decrease screen brigrtness
+bindsym $mod+F2 exec brightnessctl set +8% # decrease screen brigrtness
+# toggle i3bar
+bindsym XF86LaunchA bar mode toggle
+bindsym $mod+F3 bar mode toggle
+# search in vicinae
+bindsym XF86Search exec vicinae toggle
+bindsym $mod+w exec --no-startup-id vicinae vicinae://launch/wm/switch-windows
+# keyboard backlight (laptop)
+bindsym XF86AudioMicMute exec brightnessctl --device=kbd_backlight set 8%- # increase screen brightness
+bindsym XF86Sleep exec brightnessctl --device=kbd_backlight set +8% # increase screen brightness
+bindsym $mod+F5 exec brightnessctl --device=kbd_backlight set 8%- # increase screen brightness
+bindsym $mod+F6 exec brightnessctl --device=kbd_backlight set +8% # increase screen brightness
+
 # Pipewire-pulse
 bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
 # Media player controls
@@ -240,7 +256,7 @@ for_window [class="org.gnome.Characters"] floating enable
 # Assing Application Windows by Workspace
 assign [class="(?)firefox"] $ws1 
 # assign [class="kitty"] $ws2
-assign [class="Emacs"] $ws4
+# assign [class="Emacs"] $ws4
 # assign [class="WhatsApp"] $ws5
 assign [class="steam"] $ws6
 assign [class="zotero"] $ws3
@@ -268,7 +284,7 @@ bar {
   status_command i3blocks -c ~/.config/i3blocks/config
   # output DisplayPort-0
   position bottom
-  font pango:JetBrainsMono Nerd Font 28
+  font pango:Ubuntu Mono Nerd Font 28
   workspace_min_width 60
   mode hide
   hidden_state hide

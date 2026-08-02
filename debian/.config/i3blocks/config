@@ -13,7 +13,7 @@ color=#DCD7BA
 command=date '+%a %b %d  %H:%M'
 interval=1
 min_width=1400
-align=left
+align=center
 
 [disk]
 label=󰨆
@@ -33,19 +33,13 @@ label=󰘚
 command=~/.config/i3/scripts/memory
 interval=2
 
-[gpu-load]
-command=perl ~/.config/i3/scripts/gpu-load
-label=󱐂
-color=#f9d791
-interval=10
-# GPU_BRAND=AMD
-# min_width=GPU 100% 100% 100% 100%
-#T_WARN=70
-#T_CRIT=90
-
 [volume]
 label=󰕾
 color=$text-color
 command=~/.config/i3/scripts/volume
 instance=Master
 interval=1
+
+[battery]
+command=~/.config/i3/scripts/battery
+interval=30
