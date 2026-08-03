@@ -101,3 +101,11 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # make apps like emacs respect XDG config?
 export XDG_CONFIG_HOME="$HOME/.config"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/dante/.lmstudio/bin"
+# End of LM Studio CLI section
+
+
+# Pi
+export PATH="/home/dante/.local/share/pi-node/node-v22.23.1-linux-x64/bin:$PATH"
