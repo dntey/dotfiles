@@ -285,7 +285,7 @@ bar {
   # output DisplayPort-0
   position bottom
   font pango:Ubuntu Mono Nerd Font 28
-  workspace_min_width 60
+  # workspace_min_width 60
   mode hide
   hidden_state hide
   modifier $mod

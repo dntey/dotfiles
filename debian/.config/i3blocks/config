@@ -1,6 +1,6 @@
 # Global Properties
 separator=true
-separator_block_width=15
+separator_block_width=40
 
 # [i3-focusedwindow]
 # color=$text-color
@@ -20,7 +20,7 @@ label=󰨆
 color=#b7d0ae
 # instance=/
 command=~/.config/i3/scripts/disk
-interval=10
+interval=60
 
 [cpu_usage]
 command=~/.config/i3/scripts/cpu_usage
