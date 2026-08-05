@@ -8,13 +8,6 @@ separator_block_width=40
 # interval=persist
 # align=left
 
-[time]
-color=#DCD7BA
-command=date '+%a %b %d  %H:%M'
-interval=1
-min_width=1400
-align=center
-
 [disk]
 label=󰨆
 color=#b7d0ae
@@ -43,3 +36,14 @@ interval=1
 [battery]
 command=~/.config/i3blocks/battery
 interval=30
+
+[gpu-load]
+command=~/.config/i3blocks/gpu-load
+interval=1
+
+[time]
+color=#DCD7BA
+command=date '+%a %b %d  %H:%M'
+interval=1
+# min_width=1400
+align=center

@@ -7,14 +7,16 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock-fancy
 exec syncthing
 exec --no-startup-id picom --config ~/.config/picom/picom.conf -b
 exec --no-startup-id nm-applet
-exec --no-startup-id feh --randomize --bg-fill --recursive ~/Sync/Wallpapers/Places
+exec --no-startup-id feh --randomize --bg-fill --recursive ~/Pictures/Wallpapers/Places
 # add side monitor as secondary display
 # exec --no-startup-id xrandr --output DisplayPort-2 --auto --left-of DisplayPort-0
 exec --no-startup-id vicinae server
 exec --no-startup-id gammastep -b 1.0:0.5
 
-# I3 BAR
-font pango: Ubuntu Mono Nerd Font 24
+# i3 window bar
+font pango: Ubuntu Mono Nerd Font 14
+for_window [class=".*"] title_format "<tt>%title</tt> | <i>%class</i>"
+for_window [class=".*"] title_window_icon yes
 title_align center
 
 # SETTINGS
@@ -48,8 +50,8 @@ focus_follows_mouse yes
 
 set $mod Mod4
 floating_modifier $mod
-bindsym $mod+Shift+c reload
-bindsym $mod+Shift+r restart
+bindsym $mod+Shift+comma reload
+bindsym $mod+Shift+semicolon restart
 bindsym Mod4+q kill
 
 # Layout Bindings 
@@ -61,7 +63,9 @@ bindsym $mod+Shift+period focus mode_toggle
 
 # Layout Orientation
 bindsym $mod+Shift+t layout tabbed
-bindsym $mod+Shift+s layout toggle split
+bindsym $mod+Shift+r layout toggle split
+bindsym $mod+Shift+s layout stacked
+bindsym $mod+Shift+f fullscreen toggle
 
 # Window Navigation
 bindsym $mod+h focus left
@@ -83,16 +87,18 @@ bindsym $mod+Shift+Right move right
 
 # remapped copy paste
 # as suggested by u/-Pelvis- here: https://www.reddit.com/r/i3wm/comments/ap7d1o/changing_copy_paste_keys_to_be_like_mac/
-bindsym --release $mod+c exec "xdotool key --clearmodifiers ctrl+c"
-bindsym --release $mod+v exec "xdotool key --clearmodifiers ctrl+v"
+
+# Launcher menus in rofi
+# bindsym $mod+Shift+f exec --no-startup-id kitty --class "fzf-menu" --directory ~ -e yazi
+# for_window [class="fzf-menu"] floating enable, resize set 800 600, move position center
 
 # Vicinae launchers
 bindsym $mod+s exec vicinae toggle
-bindsym $mod+space exec vicinae toggle
 bindsym $mod+Shift+v exec vicinae vicinae://launch/clipboard/history
 bindsym $mod+f exec vicinae vicinae://launch/files/search
 bindsym $mod+a exec vicinae vicinae://launch/calculator/history
 bindsym $mod+b exec vicinae vicinae://launch/shortcuts/sct-da46ce545568
+bindsym $mod+w exec --no-startup-id vicinae vicinae://launch/wm/switch-windows
 
 # App Launchers
 bindsym $mod+Shift+b exec firefox
@@ -100,30 +106,25 @@ bindsym $mod+t exec kitty
 bindsym $mod+Shift+e exec emacs
 # bindsym $mod+m exec kitty spotify_player
 # bindsym Mod1+Shift+4 exec spectacle --region
-
-# Launcher menus in rofi
-# bindsym $mod+Shift+f exec --no-startup-id kitty --class "fzf-menu" --directory ~ -e yazi
-# for_window [class="fzf-menu"] floating enable, resize set 800 600, move position center
-
 # System Controls
-# activate lockscreen
-bindsym Mod4+Escape exec i3lock-fancy
+
+bindsym $mod+F6 exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym $mod+F3 bar mode toggle  # toggle i3bar
+bindsym $mod+F4 exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+bindsym $mod+F5 exec --no-startup-id pactl set-source-volume @DEFAULT_SOURCE@ -5% && $refresh_i3status
+bindsym $mod+F11 exec i3lock-fancy # activate lockscreen
+
+# Laptop keyboard system control buttons
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec brightnessctl set +8% # increase screen brightness
-bindsym XF86MonBrightnessDown exec brightnessctl set 8%- # decrease screen brigrtness
-bindsym $mod+F1 exec brightnessctl set 8%- # decrease screen brigrtness
-bindsym $mod+F2 exec brightnessctl set +8% # decrease screen brigrtness
-# toggle i3bar
-bindsym XF86LaunchA bar mode toggle
-bindsym $mod+F3 bar mode toggle
-# search in vicinae
-bindsym XF86Search exec vicinae toggle
-bindsym $mod+w exec --no-startup-id vicinae vicinae://launch/wm/switch-windows
+bindsym XF86MonBrightnessUp exec brightnessctl -qe set +4% # increase screen brightness
+bindsym XF86MonBrightnessDown exec brightnessctl -qe set 4%- # decrease screen brihtness
+bindsym XF86LaunchA bar mode toggle # toggle i3bar
+bindsym XF86Search exec vicinae toggle # search in vicinae
+
 # keyboard backlight (laptop)
 bindsym XF86AudioMicMute exec brightnessctl --device=kbd_backlight set 8%- # increase screen brightness
 bindsym XF86Sleep exec brightnessctl --device=kbd_backlight set +8% # increase screen brightness
-bindsym $mod+F5 exec brightnessctl --device=kbd_backlight set 8%- # increase screen brightness
-bindsym $mod+F6 exec brightnessctl --device=kbd_backlight set +8% # increase screen brightness
+
 
 # Pipewire-pulse
 bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
@@ -136,8 +137,6 @@ bindsym XF86AudioPrev exec playerctl previous
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
-# bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-# bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
 # Logout Screen
 set $mode_system System (l) lock, (e) logout, (s) suspend, (r) reboot, (Shift+s) shutdown
@@ -165,22 +164,21 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # WORKSPACES
-# set $ws0 "0: "
+set $ws0 "0: "
 # set $ws1 "1:  "
 # set $ws2 "2: "
 # set $ws3 "3: 󰗚"
 # set $ws4 "4: "
 # set $ws5 "5: 󰭹"
-set $ws0 "0: 󰎡"
-set $ws1 "1: 󰎤"
-set $ws2 "2: 󰎧"
-set $ws3 "3: 󰎪"
-set $ws4 "4: 󰎭"
-set $ws5 "5: 󰎱"
-set $ws6 "6: 󰎳"
-set $ws7 "7: 󰎶"
-set $ws8 "8: 󰎹"
-set $ws9 "9: 󰎼"
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
 # add calendar for something that works on Linux?
 bindsym $mod+1 workspace number $ws1 
 bindsym $mod+2 workspace number $ws2 
@@ -218,7 +216,7 @@ workspace $ws9 output DisplayPort-2
 workspace $ws0 output DisplayPort-0
 
 # Float all windows on specific workspaces
-for_window [workspace=$ws0] floating enable
+# for_window [workspace=$ws0] floating enable
 
 # Float these App Windows by Default
 for_window [title="obs"] floating enable
@@ -248,9 +246,9 @@ for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
 for_window [title="Picture-in-Picture"] sticky enable
 
 # GNOME Apps integration
-for_window [class="org.gnome.Nautilus"] floating enable
+# for_window [class="org.gnome.Nautilus"] floating enable
 for_window [class="gnome-system-monitor"] floating enable
-for_window [class="gnome-text-editor"] floating enable
+# for_window [class="gnome-text-editor"] floating enable
 for_window [class="org.gnome.Characters"] floating enable
 
 # Assing Application Windows by Workspace
@@ -263,18 +261,20 @@ assign [class="zotero"] $ws3
 assign [class="calibre"] $ws3
 assign [class="(?i)^org\.gnome\.evolution$"] $ws5
 assign [class="(?i)^gnome-calendar$"] $ws5
+assign [title="(?)syncthing"] $ws0
+assign [class="(?)^gnome-software$"] $ws0
 
 set $bg-color            #1a1a22
 set $inactive-bg-color   #1a1a22
 set $active-border-color #223249
 set $text-color          #C8C093
 set $inactive-text-color #54546d
-set $urgent-bg-color     #E82424
+set $urgent-bg-color     #FF5D62
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #4C7899 #285577 #ffffff #b5cbd2   #4e8ca2
-client.focused_inactive #333333 #5f676A #ffffff #9e9b93   #625e5a
-client.unfocused        #333333 #222222 #888888 #292d2E   #222222
+client.focused          #545464 #2A2A37 #ffffff #b5cbd2   #54546D
+client.focused_inactive #333333 #222222 #ffffff #292d2E   #222222
+client.unfocused        #333333 #393836 #888888 #9e9b93   #625e5a
 client.urgent           #2f343A #900000 #ffffff #900000   #900000
 client.placeholder      #000000 #0C0C0C #ffffff #000000   #0c0c0c
 client.background       #ffffff
@@ -284,9 +284,9 @@ bar {
   status_command i3blocks -c ~/.config/i3blocks/config
   # output DisplayPort-0
   position bottom
-  font pango:Ubuntu Mono Nerd Font 28
+  font pango:Ubuntu Mono Nerd Font 22
   # workspace_min_width 60
-  mode hide
+  # mode hide
   hidden_state hide
   modifier $mod
   colors {
