@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: org-r-properties
-# key: <p
-# --
-:PROPERTIES:
-:header-args:R: :session *R:$1* :tangle $2 :colnames yes :export no
-:END:

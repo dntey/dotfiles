@@ -1,0 +1,45 @@
+# Global Properties
+separator=true
+separator_block_width=40
+
+# [i3-focusedwindow]
+# color=$text-color
+# command=~/.config/i3blocks/i3-focusedwindow
+# interval=persist
+# align=left
+
+[time]
+color=#DCD7BA
+command=date '+%a %b %d  %H:%M'
+interval=1
+min_width=1400
+align=center
+
+[disk]
+label=󰨆
+color=#b7d0ae
+# instance=/
+command=~/.config/i3blocks/disk
+interval=60
+
+[cpu_usage]
+command=~/.config/i3blocks/cpu_usage
+interval=10
+label=
+
+[memory]
+label=󰘚
+# color=$text-color
+command=~/.config/i3blocks/memory
+interval=2
+
+[volume]
+label=󰕾
+color=$text-color
+command=~/.config/i3blocks/volume
+instance=Master
+interval=1
+
+[battery]
+command=~/.config/i3blocks/battery
+interval=30

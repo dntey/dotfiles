@@ -1,0 +1,43 @@
+[Unit]
+Description=llama.cpp router server
+Documentation=file://%h/Sync/Scripts/llama-server.sh
+# 100.69.2.45 is a Tailscale address, so wait for the network.
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# The script daemonizes with setsid and writes a PID file, so forking is
+# the natural fit. systemd tracks the real llama-server PID via PIDFile=
+# and can restart it if it dies on its own.
+Type=forking
+PIDFile=%h/.local/state/llama-server/llama-server.pid
+
+# systemd user services get a minimal PATH that excludes Linuxbrew,
+# where llama-server lives, so extend it here. The bin/ symlink stays
+# stable across brew upgrades (unlike the versioned Cellar realpath).
+Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+
+# Defaults match the script; override here if needed.
+Environment=LLAMA_HOST=100.69.2.45
+Environment=LLAMA_PORT=8001
+Environment=LLAMA_WAIT_SECONDS=30
+
+# ExecStart runs `start`, which launches, checks liveness, and waits for
+# health before returning — so the unit isn't "active" until the server
+# actually responds. ExecStop runs `stop`, which SIGTERMs and cleans the
+# PID file. KillMode=process avoids systemd re-killing after ExecStop.
+ExecStart=%h/Sync/Scripts/llama-server.sh start
+ExecStop=%h/Sync/Scripts/llama-server.sh stop
+KillMode=process
+
+# If startup fails (e.g. Tailscale not up yet) or the server crashes
+# later, retry after a short cooldown.
+Restart=on-failure
+RestartSec=10
+
+# Give model loading / health polling plenty of room.
+TimeoutStartSec=120
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target
