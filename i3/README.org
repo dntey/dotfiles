@@ -1,0 +1,356 @@
+#+TITLE: i3 Window manager Config
+#+AUTHOR: Dante
+
+This is my literate configuration file for the i3 window manager
+and some associated programs to help control things like;
+- application launchers
+- wallpapers
+
+All settings only apply to X11 environments.
+For wayland, see alternative window managers/compositors like sway, hyperland, etc.
+
+I use these same dotfiles across multiple devices running different linux distros.
+For example,
+- on my desktop pc, I run i3 on debian 13
+- on my m1 macbook air, I run i3 on [[https://asahilinux.org/fedora/][asahi linux fedora remix]]
+Everything should work on other distros/hardware
+as long as the main dependencies are installed.
+#+begin_src shell :exec never
+sudo dnf update -y
+sudo dnf install -y \
+    i3 i3status i3blocks \
+    picom \
+    pipewire \
+    feh \
+    xclip
+#+end_src
+
+This is a literate programming document written in Emacs org-mode.
+All code chunks in this document are tangled to the correct config files
+using =noweb=.
+
+For the i3 config file, I use the =:noweb-refs= option to group them into sections
+and =#+name:= to define the final config file here:
+#+begin_src conf :tangle .config/i3/config :noweb yes
+<<i3-startup>>
+<<i3-settings>>
+<<i3-keybinds>>
+<<i3-colors>>
+<<i3-bar>>
+<<i3-winrules>>
+#+end_src
+* Window management behavior
+Some basic settings for i3 windows and workspaces:
+#+name: i3-setmain
+#+begin_src conf :noweb-ref i3-settings
+focus_wrapping no
+tiling_drag modifier titlebar
+focus_on_window_activation focus
+hide_edge_borders smart
+smart_borders on
+default_orientation auto
+workspace_layout tabbed
+#+end_src
+
+Focus won't wrap around when focusing left or right from leftmost or rightmost windows.
+Drag windows around by holding down the =$mod= key.
+New containers will start out tabbed by default.
+
+** Keybindings
+The options for i3 modifier key are either:
+- ~Mod4~: =cmd= aka =super= aka =win=
+- ~Mod1~: =alt= aka =meta= (I avoid this because of conflicts with Emacs' meta)
+
+#+name: i3-setmod
+#+begin_src conf :noweb-ref i3-settings
+set $mod Mod4
+floating_modifier $mod
+bindsym $mod+Shift+comma reload
+bindsym $mod+Shift+semicolon restart
+bindsym Mod4+q kill
+#+end_src
+
+To reload i3, use =super= =shift= =,=.
+
+*** Workspace layout and orientation
+#+name: i3-setws
+#+begin_src conf :noweb-ref i3-settings
+# Layout Bindings 
+bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+button2 --whole-window floating toggle
+# change focus between tiling / floating windows
+bindsym $mod+period floating toggle
+bindsym $mod+Shift+period focus mode_toggle
+
+# Layout Orientation
+bindsym $mod+Shift+t layout tabbed
+bindsym $mod+Shift+r layout toggle split
+bindsym $mod+Shift+s layout stacked
+bindsym $mod+Shift+f fullscreen toggle
+#+end_src
+
+*** Navigation
+By default, i3 uses the bindings =$mod+j/k/l/;= for navigating left/down/up/right.
+I prefer the original vim versions, but you can also use the arrow keys.
+#+name: i3-navkeys
+#+begin_src conf :noweb-ref i3-keybinds
+# Window Navigation
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Right focus right
+bindsym $mod+Left focus left
+bindsym $mod+Up focus up
+bindsym $mod+Down focus right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+#+end_src
+
+*** Trackpad gestures
+If using a laptop trackpad,
+the [[https://github.com/bulletmark/libinput-gestures][libinput-gestures]] package allows you to use three and four-finger swipes
+to run commands like =i3-msg=, =vicinae=, etc.
+
+These gestures are configured in the =~/.libinput-gestures.conf= file:
+#+name: gestures-nav
+#+begin_src conf :tangle .config/libinput-gestures.conf
+# i3 Window navigation by direction
+gesture swipe up    3 i3-msg focus up
+gesture swipe down  3 i3-msg focus down
+gesture swipe right 3 i3-msg focus right
+gesture swipe left  3 i3-msg focus left
+gesture swipe right 4 ~/.config/i3/next-or-new.sh
+gesture swipe left 4 i3-msg workspace prev
+#+end_src
+
+I also use the four-finger swipe up to open my custom vicinae script
+#+name: gestures-windows
+#+begin_src conf :tangle .config/libinput-gestures.conf
+vicinae://launch/@dntey/i3-window-grid/test
+#+end_src
+
+Make sure to autostart the libinput gestures on startup
+#+begin_src conf :noweb-ref i3-startup
+exec_always --no-startup-id libinput-gestures-setup restart
+#+end_src
+** Application window behavior
+#+begin_src conf :noweb-ref i3-winrules
+# Float these App Windows by Default
+for_window [title="obs"] floating enable
+for_window [title="r_x11"] floating enable
+for_window [title="Thunar"] floating enable
+for_window [title="Filelight"] floating enable
+# for kde plasma integration 
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [class="yakuake"] floating enable
+for_window [class="systemsettings"] floating enable
+for_window [title="Desktop — Plasma"] kill, floating enable, border none
+for_window [class="plasmashell"] floating enable;
+for_window [class="Plasma"] floating enable, border none
+for_window [title="plasma-desktop"] floating enable, border none
+for_window [title="win7"] floating enable, border none
+for_window [class="krunner"] floating enable, border none
+for_window [class="Kmix"] floating enable, border none
+for_window [class="Klipper"] floating enable, border none
+for_window [class="Plasmoidviewer"] floating enable, border none
+for_window [class="(?i)*nextcloud*"] floating disable
+for_window [class="plasmashell" window_type="notification"] border none, move right 700px, move down 450px
+no_focus [class="plasmashell" window_type="notification"] 
+for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
+# show picture-in-picture across all workspaces
+for_window [title="Picture-in-Picture"] sticky enable
+
+# GNOME Apps integration
+# for_window [class="org.gnome.Nautilus"] floating enable
+for_window [class="gnome-system-monitor"] floating enable
+# for_window [class="gnome-text-editor"] floating enable
+for_window [class="org.gnome.Characters"] floating enable
+#+end_src
+
+#+begin_src conf :noweb-ref i3-winrules
+# Assing Application Windows by Workspace
+# assign [class="(?)firefox"] $ws1 
+# assign [class="kitty"] $ws2
+# assign [class="Emacs"] $ws4
+# assign [class="WhatsApp"] $ws5
+assign [class="steam"] $ws6
+assign [class="zotero"] $ws3
+assign [class="calibre"] $ws3
+assign [class="(?i)^org\.gnome\.evolution$"] $ws5
+assign [class="(?i)^gnome-calendar$"] $ws5
+assign [title="(?)syncthing"] $ws0
+assign [class="(?)^gnome-software$"] $ws0
+#+end_src
+* Appearance
+** windows and titlebars
+i3 uses simple titlebars displayed above each window
+to display the application name, wm-class, and other details.
+They can also be dragged with the mouse in floating mode.
+#+begin_src conf :noweb-ref i3-settings
+# i3 window bar
+font pango: Ubuntu Mono Nerd Font 8
+for_window [class=".*"] title_format "<tt>%title</tt> | <i>%class</i>"
+for_window [class=".*"] title_window_icon yes
+title_align center
+#+end_src
+
+The settings =title_format= and =title_window_icon= can be set differently according to class and title,
+but for now, I just have the same settings apply to all windows
+by using the wildcard ~[class=".*"]~ pattern.
+
+Windows and titlebar colors can be configured in i3/config.
+#+name: i3-wincolors
+#+begin_src conf :noweb-ref i3-colors
+# class                 border  backgr. text    indicator child_border
+client.focused          #545464 #2A2A37 #ffffff #b5cbd2   #54546D
+client.focused_inactive #333333 #222222 #ffffff #292d2E   #222222
+client.unfocused        #333333 #393836 #888888 #9e9b93   #625e5a
+client.urgent           #2f343A #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0C0C0C #ffffff #000000   #0c0c0c
+client.background       #ffffff
+#+end_src
+** i3bar
+The i3bar works together with i3blocks to display text from modules or user-defined scripts.
+#+name: i3bar-colors
+#+begin_src conf :noweb-ref i3-colors
+set $bg-color            #1a1a22
+set $inactive-bg-color   #1a1a22
+set $active-border-color #223249
+set $text-color          #C8C093
+set $inactive-text-color #54546d
+set $urgent-bg-color     #FF5D62
+#+end_src
+
+Here is the main bar command which calls i3blocks:
+#+name: i3-bar
+#+begin_src conf
+bar {
+  status_command i3blocks -c ~/.config/i3blocks/config
+  # output DisplayPort-0
+  position bottom
+  font pango:Ubuntu Mono Nerd Font 16
+  # workspace_min_width 60
+  # mode hide
+  hidden_state hide
+  modifier $mod
+  colors {
+    background $bg-color
+    separator #54546d
+    statusline #ff9e3b
+    #                  border             background         text
+    focused_workspace  $bg-color          $bg-color          $text-color
+    inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
+    urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
+  }
+  strip_workspace_numbers yes
+}
+
+#+end_src
+** i3lock
+#+begin_src conf :noweb-ref i3-startup
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -i ~/Pictures/Wallpapers/kamon-lock-screen.png -e -c 1a1a22
+#+end_src
+** Wallpapers
+#+begin_src conf :noweb-ref i3-startup
+exec_always --no-startup-id feh --randomize --bg-fill --recursive ~/Pictures/Wallpapers
+#+end_src
+** picom
+[[https://picom.app][picom]] is a compositor for X11.
+I use it to apply a red-light shift to my display for better night-time viewing experience.
+This works through a keybinding in my =~/.config/i3/config=:
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+n exec --no-startup-id ~/.config/i3/scripts/picom-toggle.sh 
+#+end_src
+which points to this script:
+#+begin_src bash :tangle .config/i3/scripts/picom-toggle.sh
+#!/bin/bash
+
+if pgrep -x "picom" > /dev/null
+then
+    killall picom
+else
+    picom -b --backend glx --window-shader-fg ~/.config/picom/shaders/redshift.glsl
+fi
+#+end_src
+
+** GTK 3
+In =~/.config/gtk-3.0/settings.ini=:
+#+begin_src conf :tangle .config/gtk-3.0/settings.ini
+[Settings]
+gtk-application-prefer-dark-theme=1
+#+end_src
+
+This doesn't seem to be working right now,
+for example, nautilus is still light theme.
+
+** X.org settings
+To scale up how system text and other elements are rendered
+in terms of dpi add this to =~/.Xresources=:
+#+begin_src conf :tangle .Xresources
+Xft.dpi: 144
+#+end_src
+~96~ dpi is the default, everything, 
+so ~192~ would be 200% scaling,
+~144~ is 150% scaling, etc.
+
+For more, see https://wiki.archlinux.org/title/HiDPI#X_Resources
+* Application launching
+** Launch on startup
+:PROPERTIES:
+:header-args: :noweb-ref startup
+:END:
+
+I start syncthing when i3 launches and control it using the syncthing webui app.
+#+begin_src conf :noweb-ref startup
+exec syncthing
+#+end_src
+
+=nm-applet= is an applet that shows up in the wm bar
+that helps to manage wifi and network settings.
+#+begin_src conf :noweb-ref startup
+exec nm-applet
+#+end_src
+
+** Launcher menus
+*** Vicinae
+I use vicinae as my main way to launch applications,
+do simple calculations,
+visual window switching,
+fuzzy-finding files and directories.
+
+It can do a lot more if you configure it and write extensions.
+
+The vicinae server should be started when i3 starts:
+#+begin_src conf :noweb-ref startup
+exec --no-startup-id vicinae server
+#+end_src
+
+Then I have the following keybinds in i3 for different launchers:
+#+begin_src conf :noweb-ref i3-keybinds
+# Vicinae launchers
+bindsym $mod+s exec vicinae toggle
+bindsym $mod+Shift+v exec vicinae vicinae://launch/clipboard/history
+bindsym $mod+f exec vicinae vicinae://launch/files/search
+bindsym $mod+a exec vicinae vicinae://launch/calculator/history
+bindsym $mod+b exec vicinae vicinae://launch/shortcuts/sct-da46ce545568
+bindsym $mod+w exec --no-startup-id vicinae vicinae://launch/@dntey/i3-window-grid/test
+bindsym $mod+z exec --no-startup-id vicinae vicinae://launch/@c4n4m1/store.vicinae.zoxide-recent-directories/recent-directories
+#+end_src
+
+*** Kitty fzf menus
+I am currently experimenting to make dmenu-like launchers with only
+kitty and fzf.
+#+begin_src conf
+# fzf menus
+bindsym $mod+d exec kitty --title 'Applications' --class 'fzf-menu' fzf
+# bindsym $mod+d exec --no-startup-id kitty --title 'fzf-menu' htop
+for_window [class="fzf-menu"] floating enable
+#+end_src
