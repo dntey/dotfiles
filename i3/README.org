@@ -126,7 +126,7 @@ gesture swipe up    3 i3-msg focus up
 gesture swipe down  3 i3-msg focus down
 gesture swipe right 3 i3-msg focus right
 gesture swipe left  3 i3-msg focus left
-gesture swipe right 4 ~/.config/i3/next-or-new.sh
+gesture swipe right 4 ~/.config/i3/scripts/next-or-new.sh
 gesture swipe left 4 i3-msg workspace prev
 #+end_src
 
@@ -139,6 +139,79 @@ vicinae://launch/@dntey/i3-window-grid/test
 Make sure to autostart the libinput gestures on startup
 #+begin_src conf :noweb-ref i3-startup
 exec_always --no-startup-id libinput-gestures-setup restart
+#+end_src
+
+I got this script from here:
+https://ansonvandoren.com/posts/libinput-gestures-i3-workspaces/
+#+begin_src shell :tangle .config/i3/scripts/next-or-new.sh
+#!/bin/bash
+
+# from https://ansonvandoren.com/posts/libinput-gestures-i3-workspaces/
+
+
+CURRENT_NUM=$(i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true).num')
+ALL_NUMS=($(i3-msg -t get_workspaces | jq -r '.[].num' | sort -n))
+NEXT_WORKSPACE_NUM=0
+
+for NUM in "${ALL_NUMS[@]}"; do
+    if (( $CURRENT_NUM < $NUM )); then
+        NEXT_WORKSPACE_NUM=$NUM
+        break
+    fi
+done
+
+if [ "$NEXT_WORKSPACE_NUM" -eq 0 ]; then
+    HIGHEST_NUM=$(echo "${ALL_NUMS[@]}" | tr ' ' '\n' | sort -nr | head -1)
+    [ -z "$HIGHEST_NUM" ] && NEXT_WORKSPACE_NUM=1 || NEXT_WORKSPACE_NUM=$((HIGHEST_NUM + 1))
+fi
+
+i3-msg workspace number "$NEXT_WORKSPACE_NUM"
+#+end_src
+
+#+begin_src shell :tangle no
+chmod +x .config/i3/scripts/next-or-new.sh
+#+end_src
+
+#+RESULTS:
+** Workspace definitions
+#+begin_src conf :noweb-ref i3-settings
+# WORKSPACES
+set $ws0 "0: "
+# set $ws1 "1:  "
+# set $ws2 "2: "
+# set $ws3 "3: 󰗚"
+# set $ws4 "4: "
+# set $ws5 "5: 󰭹"
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+# add calendar for something that works on Linux?
+bindsym $mod+1 workspace number $ws1 
+bindsym $mod+2 workspace number $ws2 
+bindsym $mod+3 workspace number $ws3 
+bindsym $mod+4 workspace number $ws4 
+bindsym $mod+5 workspace number $ws5 
+bindsym $mod+6 workspace number $ws6 
+bindsym $mod+7 workspace number $ws7 
+bindsym $mod+8 workspace number $ws8 
+bindsym $mod+9 workspace number $ws9 
+bindsym $mod+0 workspace number $ws0 
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws0
 #+end_src
 ** Application window behavior
 #+begin_src conf :noweb-ref i3-winrules
@@ -353,4 +426,38 @@ kitty and fzf.
 bindsym $mod+d exec kitty --title 'Applications' --class 'fzf-menu' fzf
 # bindsym $mod+d exec --no-startup-id kitty --title 'fzf-menu' htop
 for_window [class="fzf-menu"] floating enable
+#+end_src
+* System controls
+#+begin_src conf :noweb-ref i3-keybinds
+# System Controls
+
+bindsym $mod+F6 exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym $mod+F3 bar mode toggle  # toggle i3bar
+bindsym $mod+F4 exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+bindsym $mod+F5 exec --no-startup-id pactl set-source-volume @DEFAULT_SOURCE@ -5% && $refresh_i3status
+bindsym $mod+F11 exec i3lock-fancy # activate lockscreen
+
+# Laptop keyboard system control buttons
+# Sreen brightness controls
+bindsym XF86MonBrightnessUp exec brightnessctl -qe set +4% # increase screen brightness
+bindsym XF86MonBrightnessDown exec brightnessctl -qe set 4%- # decrease screen brihtness
+bindsym XF86LaunchA bar mode toggle # toggle i3bar
+bindsym XF86Search exec vicinae toggle # search in vicinae
+
+# keyboard backlight (laptop)
+bindsym XF86AudioMicMute exec brightnessctl --device=kbd_backlight set 8%- # increase screen brightness
+bindsym XF86Sleep exec brightnessctl --device=kbd_backlight set +8% # increase screen brightness
+
+
+# Pipewire-pulse
+bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
+# Media player controls
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+# # Use pactl to adjust volume in PulseAudio.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
 #+end_src

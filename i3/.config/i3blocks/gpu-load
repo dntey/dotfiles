@@ -58,7 +58,7 @@ if ($gpu_brand eq "NVIDIA") {
 
 # For AMD, get from radeontop
 elsif ($gpu_brand eq "AMD") {
-    open (AMD, 'radeontop -d - -l 1 |') or die;
+    open (AMD, 'radeontop -b 3 -d - -l 1 |') or die;
     while (<AMD>) {
         if (/^.*[gpu] (\d+)\.\d+%.*.*[vram] (\d+)\.\d+%.*$/) {
             $gpu_usage = $1;
