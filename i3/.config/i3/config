@@ -1,6 +1,9 @@
 exec_always --no-startup-id libinput-gestures-setup restart
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -i ~/Pictures/Wallpapers/kamon-lock-screen.png -e -c 1a1a22
 exec_always --no-startup-id feh --randomize --bg-fill --recursive ~/Pictures/Wallpapers
+exec syncthing
+exec nm-applet
+exec --no-startup-id vicinae server
 focus_wrapping no
 tiling_drag modifier titlebar
 focus_on_window_activation focus

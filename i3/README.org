@@ -382,13 +382,13 @@ For more, see https://wiki.archlinux.org/title/HiDPI#X_Resources
 :END:
 
 I start syncthing when i3 launches and control it using the syncthing webui app.
-#+begin_src conf :noweb-ref startup
+#+begin_src conf :noweb-ref i3-startup
 exec syncthing
 #+end_src
 
 =nm-applet= is an applet that shows up in the wm bar
 that helps to manage wifi and network settings.
-#+begin_src conf :noweb-ref startup
+#+begin_src conf :noweb-ref i3-startup
 exec nm-applet
 #+end_src
 
@@ -402,7 +402,7 @@ fuzzy-finding files and directories.
 It can do a lot more if you configure it and write extensions.
 
 The vicinae server should be started when i3 starts:
-#+begin_src conf :noweb-ref startup
+#+begin_src conf :noweb-ref i3-startup
 exec --no-startup-id vicinae server
 #+end_src
 
