@@ -65,7 +65,8 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-export EDITOR="emacs"
+export VISUAL="emacsclient -c"
+export EDITOR="nvim"
 # Keybindings
 bindkey -e
 bindkey '^p' history-search-backward
@@ -100,3 +101,6 @@ export PATH="$PATH:/home/dante/.lmstudio/bin"
 
 # Pi
 export PATH="/home/dante/.local/share/pi-node/node-v22.23.1-linux-x64/bin:$PATH"
+
+# Pi
+export PATH="$HOME/.local/bin:$PATH"
