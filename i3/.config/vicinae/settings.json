@@ -12,23 +12,58 @@
    "$schema": "https://vicinae.com/schemas/config.json",
    "font": {
       "normal": {
-         "size": 14
+         "size": 12
       }
    },
    "theme": {
       "dark": {
-         "name": "kanagawa"
+         "name": "vicinae-dark",
+         "icon_theme": "Breeze Dark"
       }
    },
    "launcher_window": {
+      "opacity": 0.9,
       "size": {
          "width": 924,
          "height": 576
+      },
+      "compact_mode": {
+         "enabled": true
       }
    },
    "providers": {
+      "@c4n4m1/store.vicinae.zoxide-recent-directories": {
+         "preferences": {
+            "application": "kitty"
+         }
+      },
+      "@dntey/i3-window-grid": {
+         "enabled": true,
+         "entrypoints": {
+            "test": {
+               "preferences": {
+                  "sortDirection": "ascending",
+                  "sortOrder": "recent-focus"
+               }
+            }
+         }
+      },
       "@knoopx/store.vicinae.firefox": {
          "enabled": false
+      },
+      "applications": {
+         "entrypoints": {
+            "kitty": {
+               "shortcut": "super+RETURN"
+            }
+         }
+      },
+      "scripts": {
+         "preferences": {
+            "customDirs": [
+               "/home/dante/Scripts"
+            ]
+         }
       },
       "shortcuts": {
          "enabled": true
