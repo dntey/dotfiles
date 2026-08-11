@@ -1,0 +1,38 @@
+{
+  "identifier": "@local:translate-subtitles",
+  "name": "Translate subtitles",
+  "changed": true,
+  "operation": {
+    "fields": [
+      {
+        "key": "llm.prediction.systemPrompt",
+        "value": "Translate all provided text into English from Bosnian/Serbo_Croatian.\nFor simple words with direct translation, only provide the translated word or sentence.\nOnly when applicable, give brief context for slang words or phrases and for cultural context, dialects, etc."
+      },
+      {
+        "key": "ext.virtualModel.customField.google.gemma4E4b.enableThinking",
+        "value": false
+      },
+      {
+        "key": "llm.prediction.maxPredictedTokens",
+        "value": {
+          "checked": true,
+          "value": 1000
+        }
+      },
+      {
+        "key": "llm.prediction.repeatPenalty",
+        "value": {
+          "checked": false,
+          "value": 1.1
+        }
+      },
+      {
+        "key": "ext.virtualModel.customField.google.gemma412bQat.enableThinking",
+        "value": false
+      }
+    ]
+  },
+  "load": {
+    "fields": []
+  }
+}
