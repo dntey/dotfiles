@@ -80,6 +80,6 @@ END {
     }
 
     # background
-    print("#54546D")
+    # print("#54546D")
 }
 ' /proc/meminfo

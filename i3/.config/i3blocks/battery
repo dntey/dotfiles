@@ -59,6 +59,19 @@ if (defined $remaining) {
     $remaining =~ s/[ \t]+$//;
 
     if ($remaining ne 'unknown' && $remaining ne '0 seconds') {
+        # UPower reports a decimal value in minutes or hours; display it as
+        # compact decimal hours (for example, "49.7 minutes" becomes "0.8h").
+        if ($remaining =~ /^([0-9]+(?:\.[0-9]+)?)\s+(seconds?|minutes?|hours?)$/) {
+            my ($value, $unit) = ($1, $2);
+            my %hours_per_unit = (
+                second => 1 / 3600,
+                minute => 1 / 60,
+                hour   => 1,
+            );
+            $unit =~ s/s$//;
+            $remaining = sprintf '%.1fh', $value * $hours_per_unit{$unit};
+        }
+
         $full_text .= " ($remaining)";
     }
 }

@@ -1,0 +1,7 @@
+[Unit]
+Description=i3 session
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
+EOF
+systemctl --user daemon-reload && systemctl --user start i3-session.target && sleep 1 && systemctl --user is-active graphical-session.target

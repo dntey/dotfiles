@@ -1,0 +1,73 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /home/dante/Config/i3/i3-config.org
+
+
+* picom
+:PROPERTIES:
+:ARCHIVE_TIME: 2026-08-18 Tue 14:55
+:ARCHIVE_FILE: ~/Config/i3/i3-config.org
+:ARCHIVE_OLPATH: Appearance
+:ARCHIVE_CATEGORY: i3-config
+:END:
+[[https://picom.app][picom]] is a compositor for X11.
+
+It can do window shadows, transparency, blur, rounded corners, etc.
+Here is my config for picom:
+#+begin_src conf :tangle .config/picom/picom.conf
+shadow = false # enable/disable client-side shadows
+
+fading = true; # fade windows in/out when opening/closing
+fade-in-step = 0.05 # opacity change between steps
+fade-out-step = 0.03 # opacity change when fading out
+fade-delta = 5 # milliseconds between fade steps
+fade-exclude = [ # window conditions to exclude from fading
+  # "class_g = 'Firefox-esf'"
+]
+
+#+end_src
+
+** redshift toggle
+I use picom to apply a red-light shift to my display for better night-time viewing experience.
+This works through a keybinding in my =~/.config/i3/config=:
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+F1 exec --no-startup-id ~/.config/i3/scripts/picom-toggle.sh 
+#+end_src
+which points to this script:
+#+begin_src bash :tangle .config/i3/scripts/picom-toggle.sh
+#!/bin/bash
+
+if pgrep -x "picom" > /dev/null
+then
+    killall picom
+else
+    picom -b --backend glx --window-shader-fg ~/.config/picom/shaders/redshift.glsl
+fi
+#+end_src
+
+And here is the shader which applies a red shift to the screen:
+#+name: picom-redshift-shader
+#+begin_src c :tangle .config/picom/shaders
+#version 330
+
+in vec2 texcoord;            // texture coordinate of the fragment
+uniform sampler2D tex;       // texture of the window
+
+// Forward-declare the helper that picom provides internally.
+// Do NOT give it a body — picom links in its own definition.
+vec4 default_post_processing(vec4 c);
+
+// This is the ONLY function you are allowed to define.
+vec4 window_shader() {
+    vec2 texsize = textureSize(tex, 0);
+    vec4 c = texture2D(tex, texcoord / texsize, 0);
+
+    // Warm the screen: cut green a bit, cut blue more.
+    c.g *= 0.85;
+    c.b *= 0.65;
+
+    // Hand off to picom so dim/invert/opacity/rounded-corners still work.
+    return default_post_processing(c);
+}
+#+end_src

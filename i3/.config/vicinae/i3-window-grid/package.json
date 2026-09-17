@@ -1,0 +1,64 @@
+{
+  "$schema": "https://raw.githubusercontent.com/vicinaehq/vicinae/refs/heads/main/extra/schemas/extension.json",
+  "name": "i3-window-grid",
+  "title": "i3 Window Grid",
+  "description": "Browse, focus, and close open i3 windows from a visual grid",
+  "categories": [],
+  "license": "MIT",
+  "author": "dntey",
+  "contributors": [],
+  "pastContributors": [],
+  "icon": "extension_icon.png",
+  "commands": [
+    {
+      "name": "i3-window-grid",
+      "title": "Show i3 Windows",
+      "description": "Show a grid of all open i3 windows",
+      "mode": "view",
+      "preferences": [
+        {
+          "name": "sortOrder",
+          "type": "dropdown",
+          "title": "Window Order",
+          "description": "Choose how windows are arranged in the grid",
+          "data": [
+            { "title": "i3 Layout Order", "value": "i3" },
+            { "title": "Workspace, Then Position", "value": "workspace" },
+            { "title": "Current Workspace First", "value": "current-workspace" },
+            { "title": "Most Recently Focused", "value": "recent-focus" },
+            { "title": "Window Title", "value": "title" },
+            { "title": "Application Name", "value": "application" }
+          ],
+          "default": "workspace",
+          "required": true
+        },
+        {
+          "name": "sortDirection",
+          "type": "dropdown",
+          "title": "Sort Direction",
+          "description": "Reverse the selected window order",
+          "data": [
+            { "title": "Ascending", "value": "ascending" },
+            { "title": "Descending", "value": "descending" }
+          ],
+          "default": "ascending",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "preferences": [],
+  "scripts": {
+    "build": "vici build",
+    "dev": "vici develop",
+    "format": "biome format --write src",
+    "lint": "vici lint"
+  },
+  "dependencies": {
+    "@vicinae/api": "^0.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "@biomejs/biome": "2.3.2"
+  }
+}

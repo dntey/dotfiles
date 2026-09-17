@@ -1,0 +1,1380 @@
+#+TITLE: i3 Window manager Config
+#+AUTHOR: Dante
+#+OPTIONS: toc:2
+
+This is my literate configuration file for the i3 window manager
+and some associated programs to help control things like;
+- application launchers
+- wallpapers
+
+All settings only apply to X11 environments.
+For wayland, see alternative window managers/compositors like sway, hyperland, etc.
+
+I use these same dotfiles across multiple devices running different linux distros.
+For example,
+- on my desktop pc, I run i3 on debian 13
+- on my m1 macbook air, I run i3 on [[https://asahilinux.org/fedora/][asahi linux fedora remix]]
+Everything should work on other distros/hardware
+as long as the main dependencies are installed.
+
+#+begin_src shell :exec never
+sudo dnf update -y
+sudo dnf install -y \
+    i3 i3status i3blocks \
+    picom \
+    pipewire \
+    feh \
+    xclip
+#+end_src
+
+-----
+
+This is a literate programming document written in Emacs org-mode.
+All code chunks in this document are tangled to the correct config files
+using =noweb=.
+
+For the i3 config file, I use the =:noweb-refs= option to group them into sections
+and =#+name:= to define the final config file here:
+#+begin_src conf :tangle .config/i3/config :noweb yes
+######################################################
+# EXEC ON STARTUP
+#   use exec for one-time on system start
+#   use exec_always to start every time i3 reloads
+######################################################
+<<i3-startup>>
+
+######################################################
+# I3 SETTINGS
+######################################################
+<<i3-settings>>
+
+######################################################
+# KEYBINDINGS
+######################################################
+<<i3-keybinds>>
+
+######################################################
+# BAR AND COLORS
+######################################################
+<<i3-colors>>
+<<i3-bar>>
+
+######################################################
+# WINDOW RULES
+######################################################
+<<i3-winrules>>
+#+end_src
+* Contents :TOC:
+- [[#window-management-behavior][Window management behavior]]
+  - [[#keybindings][Keybindings]]
+  - [[#workspace-definitions][Workspace definitions]]
+  - [[#application-window-behavior][Application window behavior]]
+- [[#appearance][Appearance]]
+  - [[#windows-and-titlebars][windows and titlebars]]
+  - [[#window-gaps][Window gaps]]
+  - [[#i3lock][i3lock]]
+  - [[#wallpapers][Wallpapers]]
+  - [[#picom][picom]]
+  - [[#gtk-themeing][GTK themeing]]
+  - [[#xorg-settings][X.org settings]]
+- [[#application-launching][Application launching]]
+  - [[#launch-on-startup][Launch on startup]]
+  - [[#launch-with-keybind][Launch with keybind]]
+  - [[#launcher-menus][Launcher menus]]
+- [[#system-controls][System controls]]
+  - [[#system-copy-paste][System copy-paste]]
+  - [[#media-playback][Media Playback]]
+  - [[#screen-brightness-and-keyboard-backlight][Screen brightness and keyboard backlight]]
+- [[#i3bar][i3bar]]
+  - [[#scripts][Scripts]]
+
+* Window management behavior
+Some basic settings for i3 windows and workspaces:
+#+name: i3-setmain
+#+begin_src conf :noweb-ref i3-settings
+focus_wrapping no
+tiling_drag modifier titlebar
+focus_on_window_activation focus
+hide_edge_borders smart
+smart_borders on
+default_orientation auto
+workspace_layout tabbed
+#+end_src
+
+Focus won't wrap around when focusing left or right from leftmost or rightmost windows.
+Drag windows around by holding down the =$mod= key.
+New containers will start out tabbed by default.
+
+Floating windows are limited by maximum and mimum size in pixels:
+#+begin_src conf :noweb-ref i3-settings
+floating_minimum_size 768 x 432
+floating_maximum_size 1920 x 1080
+#+end_src
+
+** Keybindings
+The options for i3 modifier key are either:
+- ~Mod4~: =cmd= aka =super= aka =win=
+- ~Mod1~: =alt= aka =meta= (I avoid this because of conflicts with Emacs' meta)
+
+#+name: i3-setmod
+#+begin_src conf :noweb-ref i3-settings
+
+set $mod Mod4
+floating_modifier $mod
+bindsym $mod+Shift+comma reload
+bindsym $mod+Shift+semicolon restart
+bindsym Mod4+q kill
+#+end_src
+
+To reload i3, use =super= =shift= =,=.
+
+*** Workspace layout and orientation
+#+name: i3-setws
+#+begin_src conf :noweb-ref i3-keybinds
+
+# KEYBINDINGS
+# All possible modifiers: cmd == Mod4, alt == Mod1, Ctrl, Shift
+# All possible keys:
+# - Letters.        a, b, c, ..., z
+# - Numbers.        0, 1, 2, ..., 9
+# - Keypad numbers. keypad0, keypad1, keypad2, ..., keypad9
+# - F-keys.         f1, f2, ..., f20
+# - Special keys.   minus, equal, period, comma, slash, backslash, quote, semicolon, backtick,
+#                   leftSquareBracket, rightSquareBracket, space, enter, esc, backspace, tab
+# - Keypad special. keypadClear, keypadDecimalMark, keypadDivide, keypadEnter, keypadEqual,
+#                   keypadMinus, keypadMultiply, keypadPlus
+# - Arrows.         Left, Down, Up, Right
+
+# Layout Bindings 
+# bindsym $mod+Tab focus next
+# bindsym $mod+Shift+Tab focus prev
+bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+button2 --whole-window floating toggle
+# change focus between tiling / floating windows
+bindsym $mod+period floating toggle
+bindsym $mod+Shift+period focus mode_toggle
+
+# Layout Orientation
+bindsym $mod+Shift+t layout tabbed
+bindsym $mod+Shift+r layout toggle split
+bindsym $mod+Shift+s layout stacked
+bindsym $mod+Shift+f fullscreen toggle
+#+end_src
+
+*** Navigation
+By default, i3 uses the bindings =$mod+j/k/l/;= for navigating left/down/up/right.
+I prefer the original vim versions, but you can also use the arrow keys.
+#+name: i3-navkeys
+#+begin_src conf :noweb-ref i3-keybinds
+# Window Navigation
+bindsym $mod+Right focus right
+bindsym $mod+Left focus left
+bindsym $mod+Up focus up
+bindsym $mod+Down focus right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+#+end_src
+
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+n focus next sibling
+bindsym $mod+p focus prev sibling
+bindsym $mod+u focus parent
+bindsym $mod+d focus child
+
+#+end_src
+
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+#+end_src
+
+*** Layout mode
+#+begin_src conf :noweb-ref i3-keybinds
+# Press $mod+; followed by either f, t, Escape or Return to launch firefox,
+# thunderbird or return to the default mode, respectively.
+set $mode_layout Layout: [f]loating [s]tacking [t]abbed split[h]/[v]
+bindsym $mod+semicolon mode "$mode_layout"
+
+mode "$mode_layout" {
+    bindsym f floating toggle
+    bindsym s layout stacking
+    bindsym t layout tabbed
+    bindsym h layout splith
+    bindsym v layout splitv
+
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
+#+end_src
+*** Mouse controls
+#+begin_src conf :noweb-ref i3-keybinds
+focus_follows_mouse no
+mouse_warping output
+#+end_src
+*** Trackpad gestures
+If using a laptop trackpad,
+the [[https://github.com/bulletmark/libinput-gestures][libinput-gestures]] package allows you to use three and four-finger swipes
+to run commands like =i3-msg=, =vicinae=, etc.
+
+These gestures are configured in the =~/.config/libinput-gestures.conf= file:
+#+name: gestures-nav
+#+begin_src conf :tangle .config/libinput-gestures.conf
+# i3 Window navigation by direction
+# gesture swipe up    3 i3-msg focus up
+# gesture swipe down  3 i3-msg focus down
+# gesture swipe right 3 i3-msg focus right
+# gesture swipe left  3 i3-msg focus left
+gesture swipe left 3 ~/.config/i3/scripts/next-or-new.sh
+gesture swipe right 3 i3-msg workspace prev
+#+end_src
+
+I also use the four-finger swipe up to open my custom vicinae script
+#+name: gestures-windows
+#+begin_src conf :tangle .config/libinput-gestures.conf
+gesture swipe up 3 vicinae vicinae://launch/@dntey/i3-window-grid/test
+#+end_src
+
+Make sure to autostart the libinput gestures on startup
+#+begin_src conf :noweb-ref i3-startup
+exec_always --no-startup-id libinput-gestures-setup restart
+#+end_src
+
+I got this script from here:
+https://ansonvandoren.com/posts/libinput-gestures-i3-workspaces/
+#+begin_src shell :tangle .config/i3/scripts/next-or-new.sh
+#!/bin/bash
+
+# from https://ansonvandoren.com/posts/libinput-gestures-i3-workspaces/
+
+
+CURRENT_NUM=$(i3-msg -t get_workspaces | jq -r '.[] | select(.focused==true).num')
+ALL_NUMS=($(i3-msg -t get_workspaces | jq -r '.[].num' | sort -n))
+NEXT_WORKSPACE_NUM=0
+
+for NUM in "${ALL_NUMS[@]}"; do
+    if (( $CURRENT_NUM < $NUM )); then
+        NEXT_WORKSPACE_NUM=$NUM
+        break
+    fi
+done
+
+if [ "$NEXT_WORKSPACE_NUM" -eq 0 ]; then
+    HIGHEST_NUM=$(echo "${ALL_NUMS[@]}" | tr ' ' '\n' | sort -nr | head -1)
+    [ -z "$HIGHEST_NUM" ] && NEXT_WORKSPACE_NUM=1 || NEXT_WORKSPACE_NUM=$((HIGHEST_NUM + 1))
+fi
+
+i3-msg workspace number "$NEXT_WORKSPACE_NUM"
+#+end_src
+
+#+begin_src shell :tangle no
+chmod +x .config/i3/scripts/next-or-new.sh
+#+end_src
+
+#+RESULTS:
+** Workspace definitions
+#+begin_src conf :noweb-ref i3-settings
+# WORKSPACES
+set $ws0 "0: "
+# set $ws1 "1:  "
+# set $ws2 "2: "
+# set $ws3 "3: 󰗚"
+# set $ws4 "4: "
+# set $ws5 "5: 󰭹"
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+# add calendar for something that works on Linux?
+bindsym $mod+1 workspace number $ws1 
+bindsym $mod+2 workspace number $ws2 
+bindsym $mod+3 workspace number $ws3 
+bindsym $mod+4 workspace number $ws4 
+bindsym $mod+5 workspace number $ws5 
+bindsym $mod+6 workspace number $ws6 
+bindsym $mod+7 workspace number $ws7 
+bindsym $mod+8 workspace number $ws8 
+bindsym $mod+9 workspace number $ws9 
+bindsym $mod+0 workspace number $ws0 
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws0
+#+end_src
+** Application window behavior
+#+begin_src conf :noweb-ref i3-winrules
+# Float these App Windows by Default
+for_window [title="obs"] floating enable
+for_window [title="r_x11"] floating enable
+for_window [title="Thunar"] floating enable
+for_window [title="Filelight"] floating enable
+# for kde plasma integration 
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [class="yakuake"] floating enable
+for_window [class="systemsettings"] floating enable
+for_window [title="Desktop — Plasma"] kill, floating enable, border none
+for_window [class="plasmashell"] floating enable;
+for_window [class="Plasma"] floating enable, border none
+for_window [title="plasma-desktop"] floating enable, border none
+for_window [title="win7"] floating enable, border none
+for_window [class="krunner"] floating enable, border none
+for_window [class="Kmix"] floating enable, border none
+for_window [class="Klipper"] floating enable, border none
+for_window [class="Plasmoidviewer"] floating enable, border none
+for_window [class="(?i)*nextcloud*"] floating disable
+for_window [class="plasmashell" window_type="notification"] border none, move right 700px, move down 450px
+no_focus [class="plasmashell" window_type="notification"] 
+for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
+# show picture-in-picture across all workspaces
+for_window [title="Picture-in-Picture"] sticky enable
+
+# GNOME Apps integration
+# for_window [class="org.gnome.Nautilus"] floating enable
+for_window [class="gnome-system-monitor"] floating enable
+# for_window [class="gnome-text-editor"] floating enable
+for_window [class="org.gnome.Characters"] floating enable
+#+end_src
+
+#+begin_src conf :noweb-ref i3-winrules
+# Assing Application Windows by Workspace
+# assign [class="(?)firefox"] $ws1 
+# assign [class="kitty"] $ws2
+# assign [class="Emacs"] $ws4
+# assign [class="WhatsApp"] $ws5
+assign [class="steam"] $ws6
+assign [class="zotero"] $ws3
+assign [class="calibre"] $ws3
+assign [class="(?i)^org\.gnome\.evolution$"] $ws5
+assign [class="(?i)^gnome-calendar$"] $ws5
+assign [title="(?)syncthing"] $ws0
+assign [class="(?)^gnome-software$"] $ws0
+#+end_src
+* Appearance
+** windows and titlebars
+i3 uses simple titlebars displayed above each window
+to display the application name, wm-class, and other details.
+They can also be dragged with the mouse in floating mode.
+#+begin_src conf :noweb-ref i3-settings
+# i3 window bar
+font pango: Ubuntu Mono Nerd Font 8
+for_window [class=".*"] title_format "%title | <i>%class</i>"
+for_window [class=".*"] title_window_icon yes
+title_align center
+
+#+end_src
+
+The settings =title_format= and =title_window_icon= can be set differently according to class and title,
+but for now, I just have the same settings apply to all windows
+by using the wildcard ~[class=".*"]~ pattern.
+
+Windows and titlebar colors can be configured in i3/config.
+#+name: i3-wincolors
+#+begin_src conf :noweb-ref i3-colors
+# class                 border  backgr. text    indicator child_border
+client.focused          #545464 #2A2A37 #ffffff #76946A   #C5C9C5
+client.focused_inactive #625E5A #393836 #625E5A #292d2E   #282727
+client.unfocused        #393836 #222222 #625E5A #9e9b93   #393836
+client.urgent           #2f343A #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0C0C0C #ffffff #000000   #0c0c0c
+client.background       #ffffff
+
+#+end_src
+
+
+*** App window settings
+#+begin_src conf :noweb-ref i3-colors
+for_window [class="Emacs"] title_format "<tt>%title</tt>"
+for_window [class="kitty"] title_format "<tt>%title</tt>"
+for_window [class="(?)firefox"] title_format "<b>%title</b>"
+#+end_src
+
+** Window gaps
+Inner gaps will insert a number of pixels of space between windows.
+Outer gaps space out all windows from the edge of the display.
+#+begin_src conf :noweb-ref i3-settings
+gaps inner 2
+gaps outer 2
+#+end_src
+
+** i3lock
+#+begin_src conf :noweb-ref i3-startup
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -i ~/Pictures/Wallpapers/kamon-lock-screen.png -e -c 1a1a22
+#+end_src
+** Wallpapers
+#+begin_src conf :noweb-ref i3-startup
+exec_always --no-startup-id feh --randomize --bg-fill --recursive ~/Pictures/Wallpapers
+#+end_src
+** picom
+[[https://picom.app][picom]] is a compositor for X11.  Start it in its normal (unshaded)
+mode when the i3 session starts.
+#+begin_src conf :noweb-ref i3-startup
+exec --no-startup-id picom --config ~/.config/picom/picom.conf
+#+end_src
+
+It can do window shadows, transparency, blur, rounded corners, etc.
+Here is my config for picom;
+I like to keep most of the defaults,
+but I have some of the main settings with comments for documentation purposes.
+#+begin_src conf :tangle .config/picom/picom.conf
+# This picom build requires an explicit backend.  GLX is also required for
+# rounded corners and the redshift window shader.
+backend = "glx";
+
+shadow = false # enable/disable client-side shadows
+
+fading = true; # fade windows in/out when opening/closing
+fade-in-step = 0.05 # opacity change between steps
+fade-out-step = 0.03 # opacity change when fading out
+fade-delta = 5 # milliseconds between fade steps
+fade-exclude = [ # window conditions to exclude from fading
+  # "class_g = 'Firefox-esf'"
+]
+
+inactive-opacity = 1.0 # opacity of inactive windows
+active-opacity = 1.0 # opacity of active windows
+frame-opacity = 0.8 # opacity of window titlebars and borders
+inactive-opacity-override = false; # let opacity set by -i override window values
+
+inactive-dim = 0.1 # dim inactive windows
+focus-exclude = [ # list of window conditions to never consider focused
+  "class_g = 'Cairo-clock'"
+];
+
+opacity-rule = [ # list of opacity rules for specific window patterns
+  "100:class_g = 'Picture-in-Picture'", # full opacity for PIP video windows
+  "100:class_g = 'Firefox'",
+];
+
+round-borders = 1; # enable/disable rounded corners
+corner-radius = 8; # pixel radius of rounded window corners
+rounded-corners-exclude = [ # exclude window types from rounding
+  "window_type = 'dock'",
+  "class_g = 'i3-frame'",
+];
+#+end_src
+
+*** redshift toggle
+I use picom to apply a red-light shift to my display for better night-time viewing experience.
+Picom starts normally; the keybinding replaces it with the shader-enabled compositor,
+and pressing it again restores normal compositing.  This works through a keybinding in
+my =~/.config/i3/config=:
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+F1 exec --no-startup-id ~/.config/i3/scripts/picom-toggle.sh 
+#+end_src
+which points to this script:
+#+begin_src bash :tangle .config/i3/scripts/picom-toggle.sh
+#!/usr/bin/env bash
+
+config="$HOME/.config/picom/picom.conf"
+shader="$HOME/.config/picom/shaders/redshift.glsl"
+
+# A running picom with this shader means the next state is normal; otherwise
+# enable the shader.  Stop the old compositor before starting its replacement.
+if pgrep -a -x picom | grep -Fq -- "$shader"; then
+    picom_args=()
+else
+    picom_args=(--backend glx --window-shader-fg "$shader")
+fi
+
+pkill -x picom 2>/dev/null || true
+while pgrep -x picom >/dev/null; do
+    sleep 0.1
+done
+
+picom --config "$config" -b "${picom_args[@]}"
+#+end_src
+
+And here is the shader which applies a red shift to the screen:
+#+name: picom-redshift-shader
+#+begin_src c :tangle .config/picom/shaders/redshift.glsl
+#version 330
+
+in vec2 texcoord;            // texture coordinate of the fragment
+uniform sampler2D tex;       // texture of the window
+
+// Forward-declare the helper that picom provides internally.
+// Do NOT give it a body — picom links in its own definition.
+vec4 default_post_processing(vec4 c);
+
+// This is the ONLY function you are allowed to define.
+vec4 window_shader() {
+    vec2 texsize = textureSize(tex, 0);
+    vec4 c = texture2D(tex, texcoord / texsize, 0);
+
+    // Warm the screen: cut green a bit, cut blue more.
+    c.g *= 0.85;
+    c.b *= 0.65;
+
+    // Hand off to picom so dim/invert/opacity/rounded-corners still work.
+    return default_post_processing(c);
+}
+#+end_src
+** GTK themeing
+In =~/.config/gtk-3.0/settings.ini=:
+#+begin_src conf :tangle .config/gtk-3.0/settings.ini
+[Settings]
+gtk-application-prefer-dark-theme=1
+#+end_src
+
+There was a problem with xdg-portal-service not applying to gtk-4 themes,
+which this seems to fix:
+
+#+begin_src conf :noweb-ref i3-startup
+exec --no-startup-id systemctl --user import-environment DISPLAY XDG_SESSION_TYPE XDG_SESSION_DESKTOP
+exec --no-startup-id systemctl --user start i3-session.target
+#+end_src
+
+#+begin_src conf :tangle .config/systemd/user/i3-session.target
+[Unit]
+Description=i3 session
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
+EOF
+systemctl --user daemon-reload && systemctl --user start i3-session.target && sleep 1 && systemctl --user is-active graphical-session.target
+#+end_src
+
+** X.org settings
+To scale up how system text and other elements are rendered
+in terms of dpi add this to =~/.Xresources=:
+#+begin_src conf :tangle .Xresources
+Xft.dpi: 144
+#+end_src
+~96~ dpi is the default, everything, 
+so ~192~ would be 200% scaling,
+~144~ is 150% scaling, etc.
+
+For more, see https://wiki.archlinux.org/title/HiDPI#X_Resources
+* Application launching
+** Launch on startup
+:PROPERTIES:
+:header-args: :noweb-ref startup
+:END:
+
+I start syncthing when i3 launches and control it using the syncthing webui app.
+#+begin_src conf :noweb-ref i3-startup
+exec syncthing
+#+end_src
+
+=nm-applet= is an applet that shows up in the wm bar
+that helps to manage wifi and network settings.
+#+begin_src conf :noweb-ref i3-startup
+exec nm-applet
+#+end_src
+
+Launch Emacs and send to window 2
+#+begin_src conf :noweb-ref i3-startup
+exec emacs; move container to workspace 2; workspace 2;
+#+end_src
+
+** Launch with keybind
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+Return exec kitty
+bindsym $mod+t [class="kitty"] focus
+
+#+end_src
+
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+Shift+e exec emacsclient -c
+bindsym $mod+e [class="Emacs"] focus
+
+#+end_src
+
+#+begin_src conf :noweb-ref i3-keybinds
+bindsym $mod+Shift+b exec firefox
+# bindsym $mod+b [class="org.mozilla.firefox"] focus
+#+end_src
+
+** Launcher menus
+*** Vicinae
+I use vicinae as my main way to launch applications,
+do simple calculations,
+visual window switching,
+fuzzy-finding files and directories.
+
+It can do a lot more if you configure it and write extensions.
+
+The vicinae server should be started when i3 starts:
+#+begin_src conf :noweb-ref i3-startup
+exec_always --no-startup-id vicinae server --replace
+#+end_src
+
+Then I have the following keybinds in i3 for different launchers:
+#+begin_src conf :noweb-ref i3-keybinds
+# Vicinae launchers
+bindsym $mod+s exec vicinae toggle
+bindsym $mod+Shift+v exec vicinae vicinae://launch/clipboard/history
+bindsym $mod+f exec vicinae vicinae://launch/files/search
+bindsym $mod+a exec vicinae vicinae://launch/calculator/history
+bindsym $mod+b exec vicinae vicinae://launch/@ShaderCompilation/store.vicinae.simple-bookmarks/simple-bookmarks
+bindsym $mod+w exec --no-startup-id vicinae vicinae://launch/@dntey/i3-window-grid/test
+bindsym $mod+z exec --no-startup-id vicinae vicinae://launch/@c4n4m1/store.vicinae.zoxide-recent-directories/recent-directories
+#+end_src
+
+*** Kitty fzf menus
+I am currently experimenting to make dmenu-like launchers with only
+kitty and fzf.
+#+begin_src conf
+# fzf menus
+bindsym $mod+d exec kitty --title 'Applications' --class 'fzf-menu' fzf
+# bindsym $mod+d exec --no-startup-id kitty --title 'fzf-menu' htop
+for_window [class="fzf-menu"] floating enable
+#+end_src
+* System controls
+
+** System copy-paste
+This is a small hack to rebind =ctrl= =c= and =ctrl= =v= to =cmd= =c=
+for apps that rely on the default copy paste keybinds.
+One problem is that this also applies to apps with different keybind defaults
+like Emacs or the terminal which use =ctrl= =c= for other functions besides copy.
+
+#+begin_src conf :noweb-ref i3-keybinds
+# Simulate ctrl+c upon pressing $mod+c
+bindsym --release $mod+c exec --no-startup-id xdotool key --clearmodifiers ctrl+c
+bindsym --release $mod+v exec --no-startup-id xdotool key --clearmodifiers ctrl+v
+
+#+end_src
+
+** Media Playback
+I use playerctl to control volume, play, pause, etc.
+
+#+begin_src conf :noweb-ref i3-keybinds
+# System Controls
+
+bindsym $mod+F6 exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym $mod+F3 exec i3-msg bar mode toggle  # toggle i3bar
+bindsym $mod+F4 exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+bindsym $mod+F5 exec --no-startup-id pactl set-source-volume @DEFAULT_SOURCE@ -5% && $refresh_i3status
+bindsym $mod+F11 exec i3lock-fancy # activate lockscreen
+
+# Pipewire-pulse
+bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
+# Media player controls
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+# # Use pactl to adjust volume in PulseAudio.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +8% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -8% && $refresh_i3status
+#+end_src
+
+For firefox to block DPMS from turning off the screen,
+I use this script which uses the playerctl status.
+#+begin_src sh :tangle .config/i3/scripts/dpms-watch-firefox.sh
+#!/bin/sh
+# Disables DPMS while Firefox is playing media, re-enables otherwise.
+# Requires: playerctl
+
+DPMS_TIMEOUT=600  # seconds
+
+set_dpms_on() {
+    xset dpms "$DPMS_TIMEOUT" "$DPMS_TIMEOUT" "$DPMS_TIMEOUT" 2>/dev/null
+}
+
+set_dpms_off() {
+    xset -dpms 2>/dev/null
+}
+
+# Start from a known state
+set_dpms_on
+
+# playerctl --follow prints a new line whenever the status changes.
+# Blank line = no player / player exited.
+playerctl --player=firefox --follow status 2>/dev/null | while IFS= read -r status; do
+    case "$status" in
+        Playing)
+            set_dpms_off
+            ;;
+        ""|Stopped|Paused)
+            set_dpms_on
+            ;;
+        *)
+            # Unknown status — leave DPMS as-is
+            ;;
+    esac
+done
+#+end_src
+
+This script gets activated at startup using:
+#+begin_src conf :noweb-ref i3-startup
+exec_always --no-startup-id ~/.config/i3/scripts/dpms-watch-firefox.sh
+#+end_src
+** Screen brightness and keyboard backlight
+I use brightnessctl to set screen and keyboard backlight brightness.
+
+#+begin_src conf :noweb-ref i3-keybinds
+
+# Laptop keyboard system control buttons
+# Sreen brightness controls
+bindsym XF86MonBrightnessUp exec brightnessctl -qe set +4% # increase screen brightness
+bindsym XF86MonBrightnessDown exec brightnessctl -qe set 4%- # decrease screen brihtness
+bindsym XF86LaunchA exec i3-msg bar mode toggle # toggle i3bar
+bindsym XF86Search exec vicinae toggle # search in vicinae
+
+# keyboard backlight (laptop)
+bindsym XF86AudioMicMute exec brightnessctl --device=kbd_backlight set 8%- # increase screen brightness
+bindsym XF86Sleep exec brightnessctl --device=kbd_backlight set +8% # increase screen brightness
+
+
+#+end_src
+
+* i3bar
+The i3bar works together with i3blocks to display text from modules or user-defined scripts.
+#+name: i3bar-colors
+#+begin_src conf :noweb-ref i3-colors
+set $bg-color            #1a1a22
+set $inactive-bg-color   #1a1a22
+set $active-border-color #223249
+set $text-color          #C8C093
+set $inactive-text-color #54546d
+set $urgent-bg-color     #FF5D62
+#+end_src
+
+Here is the main bar command which calls i3blocks:
+#+name: i3-bar
+#+begin_src conf
+bar {
+  status_command i3blocks -c ~/.config/i3blocks/config
+  # output DisplayPort-0
+  position bottom
+  font pango:Ubuntu Mono Nerd Font 16
+  # workspace_min_width 60
+  mode hide
+  hidden_state hide
+  modifier $mod
+  colors {
+    background $bg-color
+    separator #54546d
+    statusline #ff9e3b
+    #                  border             background         text
+    focused_workspace  $bg-color          $bg-color          $text-color
+    inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
+    urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
+  }
+  strip_workspace_numbers yes
+}
+
+#+end_src
+
+And here is the config file for i3blocks itself
+which calls the scripts for the modules.
+#+begin_src conf :tangle .config/i3blocks/config
+# Global Properties
+separator=true
+separator_block_width=40
+
+# [i3-focusedwindow]
+# color=$text-color
+# command=~/.config/i3blocks/i3-focusedwindow
+# interval=persist
+# align=left
+
+[disk]
+label=󰨆
+color=#b7d0ae
+# instance=/
+command=~/.config/i3blocks/disk
+interval=60
+
+[cpu_usage]
+command=~/.config/i3blocks/cpu_usage
+interval=10
+label=
+
+[memory]
+label=󰘚
+# color=$text-color
+command=~/.config/i3blocks/memory
+interval=2
+
+[volume]
+label=󰕾
+color=$text-color
+command=~/.config/i3blocks/volume
+instance=Master
+interval=1
+
+[battery]
+command=~/.config/i3blocks/battery
+interval=30
+
+[gpu-load]
+command=~/.config/i3blocks/gpu-load
+interval=1
+
+[time]
+color=#DCD7BA
+command=date '+%a %b %d  %H:%M'
+interval=1
+# min_width=1400
+align=center
+
+#+end_src
+
+** Scripts
+*** disk usage
+Shows the amount of storage space used and available for the home directory.
+#+begin_src shell :tangle .config/i3blocks/disk
+#!/usr/bin/env bash
+# Copyright (C) 2014 Julien Bonjean <julien@bonjean.info>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Handle click events
+if [ "$BLOCK_BUTTON" = "1" ]; then
+    # left click: open file manager
+    i3-msg -q exec "filelight $HOME" >/dev/null 2>&1 &
+    # i3-msg -q exec "kitty yazi $HOME" >/dev/null 2>&1 &
+fi
+
+DIR="${DIR:-$BLOCK_INSTANCE}"
+DIR="${DIR:-$HOME}"
+ALERT_LOW="${ALERT_LOW:-$1}"
+ALERT_LOW="${ALERT_LOW:-10}" # color will turn red under this value (default: 10%)
+
+LOCAL_FLAG="-l"
+if [ "$1" = "-n" ] || [ "$2" = "-n" ]; then
+    LOCAL_FLAG=""
+fi
+
+df -h -P $LOCAL_FLAG "$DIR" | awk -v label="$LABEL" -v alert_low=$ALERT_LOW '
+/\/.*/ {
+	# full text (Available / Total)
+	print label $3 "/" $2
+
+	# short text
+	print label $4
+
+	use=$5
+
+	# no need to continue parsing
+	exit 0
+}
+
+END {
+	gsub(/%$/,"",use)
+	if (100 - use < alert_low) {
+		# color
+		print "#FF0000"
+	}
+}
+'
+
+#+end_src
+*** laptop battery status
+This perl script uses the =upower= cli tool to query the device battery.
+It cleans up some of the formatting provided by the =upower -i /org/freedesktop/UPower/devices//<battery_name>=
+to fit in the bar.
+
+#+begin_src perl :tangle .config/i3blocks/battery
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use utf8;
+
+$ENV{LC_ALL} = 'C';
+
+my $device = $ENV{BATTERY_DEVICE}
+    || '/org/freedesktop/UPower/devices/DisplayDevice';
+
+my $prefix = $ENV{LABEL} || '';
+
+open my $upower, '-|', 'upower', '-i', $device
+    or exit 0;
+
+my $output = do {
+    local $/;
+    <$upower>;
+};
+
+close $upower;
+
+exit 0 unless defined $output;
+
+my ($status) = $output =~ /^[ \t]*state:[ \t]*(\S[^\r\n]*)/m;
+my ($raw_percent) =
+    $output =~ /^[ \t]*percentage:[ \t]*([0-9]+(?:\.[0-9]+)?)%/m;
+
+# No usable battery information.
+exit 0 unless defined $status && defined $raw_percent;
+
+$status =~ s/[ \t]+$//;
+
+my %state_labels = (
+    'charging'          => '󰂄 ',
+    'discharging'       => '󰁾 ',
+    'fully-charged'     => '󱊣 ',
+    'pending-charge'    => '󱧥 ',
+    'pending-discharge' => '󱧥 ',
+    'empty'             => '󰁺 ',
+);
+
+my $state_label = $state_labels{$status} // 'BAT: ';
+my $label = $prefix . $state_label;
+
+# Round UPower's decimal percentage to the nearest whole number.
+my $percent = int($raw_percent + 0.5);
+
+my $full_text = "$label$percent%";
+
+my $short_text = $full_text;
+
+# Append UPower's estimated remaining time when available.
+my ($remaining) =
+    $output =~ /^[ \t]*time to (?:empty|full):[ \t]*(\S[^\r\n]*)/m;
+
+if (defined $remaining) {
+    $remaining =~ s/[ \t]+$//;
+
+    if ($remaining ne 'unknown' && $remaining ne '0 seconds') {
+        # UPower reports a decimal value in minutes or hours; display it as
+        # compact decimal hours (for example, "49.7 minutes" becomes "0.8h").
+        if ($remaining =~ /^([0-9]+(?:\.[0-9]+)?)\s+(seconds?|minutes?|hours?)$/) {
+            my ($value, $unit) = ($1, $2);
+            my %hours_per_unit = (
+                second => 1 / 3600,
+                minute => 1 / 60,
+                hour   => 1,
+            );
+            $unit =~ s/s$//;
+            $remaining = sprintf '%.1fh', $value * $hours_per_unit{$unit};
+        }
+
+        $full_text .= " ($remaining)";
+    }
+}
+
+# i3blocks output:
+# 1. full text
+# 2. short text
+# 3. optional color
+print "$full_text\n";
+print "$short_text\n";
+
+if ($status eq 'charging') {
+    if ($percent >= 79) {
+        print "#A8FF00\n";
+    }
+    elsif ($percent < 79) {
+        print "#76946A\n";
+    }
+}
+elsif ($status eq 'discharging') {
+    if ($percent < 10) {
+        print "#FF0000\n";
+    }
+    elsif ($percent < 20) {
+        print "#DCA561\n";
+    }
+    elsif ($percent < 85) {
+        print "#727169\n";
+    }
+
+    exit 33 if $percent < 5;
+}
+
+exit 0;
+
+#+end_src
+
+*** CPU usage
+#+begin_src perl :tangle .config/i3blocks/cpu_usage
+#!/usr/bin/env perl
+#
+# Copyright 2014 Pierre Mavro <deimos@deimos.fr>
+# Copyright 2014 Vivien Didelot <vivien@didelot.org>
+# Copyright 2014 Andreas Guldstrand <andreas.guldstrand@gmail.com>
+#
+# Licensed under the terms of the GNU GPL v3, or any later version.
+
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+
+# default values
+my $t_warn = $ENV{T_WARN} // 50;
+my $t_crit = $ENV{T_CRIT} // 80;
+my $cpu_usage = -1;
+my $decimals = $ENV{DECIMALS} // 0;
+my $label = $ENV{LABEL} // "";
+my $color_normal = $ENV{COLOR_NORMAL} // "#a292a3";
+my $color_warn = $ENV{COLOR_WARN} // "#b35b79";
+my $color_crit = $ENV{COLOR_CRIT} // "#d7474b";
+
+sub help {
+    print "Usage: cpu_usage [-w <warning>] [-c <critical>] [-d <decimals>]\n";
+    print "-w <percent>: warning threshold to become yellow\n";
+    print "-c <percent>: critical threshold to become red\n";
+    print "-d <decimals>:  Use <decimals> decimals for percentage (default is $decimals) \n"; 
+    exit 0;
+}
+
+GetOptions("help|h" => \&help,
+           "w=i"    => \$t_warn,
+           "c=i"    => \$t_crit,
+           "d=i"    => \$decimals,
+);
+
+# Get CPU usage
+$ENV{LC_ALL}="en_US"; # if mpstat is not run under en_US locale, things may break, so make sure it is
+open (MPSTAT, 'mpstat 1 1 |') or die;
+while (<MPSTAT>) {
+    if (/^.*\s+(\d+\.\d+)[\s\x00]?$/) {
+        $cpu_usage = 100 - $1; # 100% - %idle
+        last;
+    }
+}
+close(MPSTAT);
+
+$cpu_usage eq -1 and die 'Can\'t find CPU information';
+
+# Print short_text, full_text
+print "${label}";
+printf "%.${decimals}f%%\n", $cpu_usage;
+print "${label}";
+printf "%.${decimals}f%%\n", $cpu_usage;
+
+# Print color, if needed
+if ($cpu_usage >= $t_crit) {
+    print "${color_crit}\n";
+} elsif ($cpu_usage >= $t_warn) {
+    print "${color_warn}\n";
+} else {
+    print "${color_normal}\n";
+}
+
+exit 0;
+#+end_src
+
+*** GPU load
+#+begin_src perl :tangle .config/i3blocks/gpu-load
+#!/usr/bin/perl
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+
+# default values
+my $t_warn = $ENV{T_WARN} || 70;
+my $t_crit = $ENV{T_CRIT} || 90;
+my $gpu_brand = $ENV{GPU_BRAND} || "AMD";
+my $gpu_usage = -1;
+my $gpu_mem = -1;
+my $gpu_video = -1;
+my $gpu_pcie = -1;
+
+my $full_text = "";
+
+sub help {
+    print "Usage: gpu-load [-w <warning>] [-c <critical>]\n";
+    print "-w <percent>: warning threshold to become amber\n";
+    print "-c <percent>: critical threshold to become red\n";
+    exit 0;
+}
+
+GetOptions("help|h" => \&help,
+           "w=i"    => \$t_warn,
+           "c=i"    => \$t_crit);
+
+# Get GPU usage from nvidia-settings
+if ($gpu_brand eq "NVIDIA") {
+    open (NVS, 'nvidia-settings -q GPUUtilization -t |') or die;
+    while (<NVS>) {
+        if (/^[a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+)$/) {
+            $gpu_usage = $1;
+            $gpu_mem = $2;
+            $gpu_video = $3;
+            $gpu_pcie = $4;
+            last;
+        }
+    }
+    close(NVS);
+    $full_text = sprintf "%.0f%% %.0f%% %.0f%% %.0f%%\n", $gpu_usage, $gpu_mem, $gpu_video, $gpu_pcie;
+} 
+
+# For AMD, get from radeontop
+elsif ($gpu_brand eq "AMD") {
+    open (AMD, 'radeontop -b 3 -d - -l 1 |') or die;
+    while (<AMD>) {
+        if (/^.*[gpu] (\d+)\.\d+%.*.*[vram] (\d+)\.\d+%.*$/) {
+            $gpu_usage = $1;
+            $gpu_mem = $2;
+            last;
+        }
+    }
+    close(AMD);
+    $full_text = sprintf "%.0f%% %.0f%%\n", $gpu_usage, $gpu_mem;
+}
+
+$gpu_usage eq -1 and die 'Can\'t find GPU information';
+
+# Print full_text, short_text
+print $full_text;
+printf "%.0f%%\n", $gpu_usage;
+
+# Print color, if    needed
+if ($gpu_usage >= $t_crit || $gpu_mem >= $t_crit || $gpu_video >= $t_crit || $gpu_pcie >= $t_crit) {
+    print "#e98a00\n";
+    exit 33;
+} elsif ($gpu_usage >= $t_warn || $gpu_mem >= $t_warn || $gpu_video >= $t_warn || $gpu_pcie >= $t_warn) {
+    print "#de9800\n";
+}
+
+exit 0;
+#+end_src
+
+*** Focused window title
+#+begin_src bash :tangle .config/i3blocks/i3-focusedwindow
+#!/usr/bin/env bash
+# Author: Kn
+
+while :
+do
+  ID=$(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}')
+  if [[ $1 ]] 
+  then
+    TITLE=$(xprop -id $ID -len $1 | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2)
+    echo "$TITLE"
+  else
+    TITLE=$(xprop -id $ID | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2)
+    echo "$TITLE"
+  fi
+done
+#+end_src
+
+*** Memory usage
+#+begin_src bash :tangle .config/i3blocks/memory
+#!/usr/bin/env bash
+# Copyright (C) 2014 Julien Bonjean <julien@bonjean.info>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Handle click events
+if [ "$BLOCK_BUTTON" = "1" ]; then
+    # left click: open htop
+    i3-msg -q exec "kitty htop" >/dev/null 2>&1 &
+fi
+
+TYPE="${BLOCK_INSTANCE:-mem}"
+
+awk -v type=$TYPE '
+/^MemTotal:/ {
+    mem_total=$2
+}
+/^MemFree:/ {
+    mem_free=$2
+}
+/^Buffers:/ {
+    mem_free+=$2
+}
+/^Cached:/ {
+    mem_free+=$2
+}
+/^SwapTotal:/ {
+    swap_total=$2
+}
+/^SwapFree:/ {
+    swap_free=$2
+}
+END {
+    if (type == "swap") {
+        free=swap_free/1024/1024
+        used=(swap_total-swap_free)/1024/1024
+        total=swap_total/1024/1024
+    } else {
+        free=mem_free/1024/1024
+        used=(mem_total-mem_free)/1024/1024
+        total=mem_total/1024/1024
+    }
+
+    pct=0
+    if (total > 0) {
+        pct=used/total*100
+    }
+
+    # full text
+    # printf("%.1fG/%.1fG (%.f%%)\n", used, total, pct)
+
+    # short text
+    printf("%.f%%\n", pct)
+
+    # short text
+    printf("%.1fG/%.1fG\n", used, total)
+
+    # color
+    if (pct > 90) {
+        print("#223249")
+    } else if (pct > 70) {
+        print("#2D4F67")
+    } else if (pct > 50) {
+        print("#658594")
+    } else if (pct > 30) {
+        print("#7FB4CA")
+    } else if (pct < 30) {
+        print("#b5cbd2")
+    }
+
+    # background
+    # print("#54546D")
+}
+' /proc/meminfo
+#+end_src
+
+*** Volume
+#+begin_src bash :tangle .config/i3blocks/volume
+#!/usr/bin/env bash
+# Copyright (C) 2014 Julien Bonjean <julien@bonjean.info>
+# Copyright (C) 2014 Alexander Keller <github@nycroth.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# original source: https://github.com/vivien/i3blocks-contrib/tree/master/volume
+# check the readme: https://github.com/vivien/i3blocks-contrib/blob/master/volume/README.md
+#------------------------------------------------------------------------
+
+# The second parameter overrides the mixer selection
+# For PulseAudio users, eventually use "pulse"
+# For Jack/Jack2 users, use "jackplug"
+# For ALSA users, you may use "default" for your primary card
+# or you may use hw:# where # is the number of the card desired
+if [[ -z "$MIXER" ]] ; then
+    MIXER="default"
+    if command -v pulseaudio >/dev/null 2>&1 && pulseaudio --check ; then
+        # pulseaudio is running, but not all installations use "pulse"
+        if amixer -D pulse info >/dev/null 2>&1 ; then
+            MIXER="pulse"
+        fi
+    fi
+    [ -n "$(lsmod | grep jack)" ] && MIXER="jackplug"
+    MIXER="${2:-$MIXER}"
+fi
+
+# The instance option sets the control to report and configure
+# This defaults to the first control of your selected mixer
+# For a list of the available, use `amixer -D $Your_Mixer scontrols`
+if [[ -z "$SCONTROL" ]] ; then
+    SCONTROL="${BLOCK_INSTANCE:-$(amixer -D $MIXER scontrols |
+                      sed -n "s/Simple mixer control '\([^']*\)',0/\1/p" |
+                      head -n1
+                    )}"
+fi
+
+# The first parameter sets the step to change the volume by (and units to display)
+# This may be in in % or dB (eg. 5% or 3dB)
+if [[ -z "$STEP" ]] ; then
+    STEP="${1:-5%}"
+fi
+
+# AMIXER(1):
+# "Use the mapped volume for evaluating the percentage representation like alsamixer, to be
+# more natural for human ear."
+NATURAL_MAPPING=${NATURAL_MAPPING:-0}
+if [[ "$NATURAL_MAPPING" != "0" ]] ; then
+    AMIXER_PARAMS="-M"
+fi
+
+#------------------------------------------------------------------------
+
+capability() { # Return "Capture" if the device is a capture device
+  amixer $AMIXER_PARAMS -D $MIXER get $SCONTROL |
+    sed -n "s/  Capabilities:.*cvolume.*/Capture/p"
+}
+
+volume() {
+  amixer $AMIXER_PARAMS -D $MIXER get $SCONTROL $(capability)
+}
+
+format() {
+  
+  perl_filter='if (/.*\[(\d+%)\] (\[(-?\d+.\d+dB)\] )?\[(on|off)\]/)'
+  perl_filter+='{CORE::say $4 eq "off" ? "MUTE" : "'
+  # If dB was selected, print that instead
+  perl_filter+=$([[ $STEP = *dB ]] && echo '$3' || echo '$1')
+  perl_filter+='"; exit}'
+  output=$(perl -ne "$perl_filter")
+  echo "$LABEL$output"
+}
+
+#------------------------------------------------------------------------
+
+case $BLOCK_BUTTON in
+  3) amixer $AMIXER_PARAMS -q -D $MIXER sset $SCONTROL $(capability) toggle ;;  # right click, mute/unmute
+  4) amixer $AMIXER_PARAMS -q -D $MIXER sset $SCONTROL $(capability) ${STEP}+ unmute ;; # scroll up, increase
+  5) amixer $AMIXER_PARAMS -q -D $MIXER sset $SCONTROL $(capability) ${STEP}- unmute ;; # scroll down, decrease
+esac
+
+volume | format
+#+end_src
