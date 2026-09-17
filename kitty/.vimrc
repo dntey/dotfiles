@@ -33,6 +33,7 @@ command! MakeTags !ctags -R
 " {{{
 
 " Plugin code goes here
+set rtp+=/opt/homebrew/opt/fzf
 
 " }}}
 

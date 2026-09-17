@@ -1,0 +1,26 @@
+# ~/.config/yazi/init.lua
+
+[[mgr.prepend_keymap]]
+on   = "!"
+run  = 'shell "$SHELL" --block --confirm'
+desc = "Open shell here"
+
+[[mgr.prepend_keymap]]
+on = "o"
+run = "plugin open-with-cmd --args=block"
+desc = "Open with command in the terminal"
+
+[[mgr.prepend_keymap]]
+on   = "l"
+run  = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
+
+# send yanked files to xclip clipboard
+[[mgr.prepend_keymap]]
+on  = "y"
+run = [ "shell -- echo %s | xclip -i -selection clipboard -t text/uri-list", "yank" ]
+
+# cd back to root of current git repo
+[[mgr.prepend_keymap]]
+on = [ "g", "r" ]
+run = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"'

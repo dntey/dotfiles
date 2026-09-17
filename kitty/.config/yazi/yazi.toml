@@ -1,16 +1,10 @@
+# ~/.config/yazi/yazi.toml
+
 [mgr]
-linemode = "size"
+# linemode = "size"
+linemode = "size_and_mtime"
 ratio = [0, 5, 5]
-
-[[manager.prepend_keymap]]
-on   = "!"
-run  = 'shell "$SHELL" --block --confirm'
-desc = "Open shell here"
-
-[[manager.prepend_keymap]]
-on = "o"
-run = "plugin open-with-cmd --args=block"
-desc = "Open with command in the terminal"
+sort_by = "natural"
 
 [preview]
 tab_size        = 2
@@ -18,3 +12,15 @@ max_width       = 2400
 max_height      = 3600
 image_quality   = 75
 
+[opener]
+emacs = [
+  { run = "emacsclient -c %s", orphan = true, desc = "Emacs client" },
+]
+vim = [
+  { run = "nvim %s", block = true, desc = "neovim" },
+]
+
+[open]
+prepend_rules = [
+  { mime = "text/*", use = [ "emacs", "vim" ] },
+]
