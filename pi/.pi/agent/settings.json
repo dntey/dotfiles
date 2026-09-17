@@ -1,0 +1,22 @@
+{
+  "lastChangelogVersion": "0.84.1",
+  "theme": "dark",
+  "llamaServerUrl": "http://127.0.0.1:8080",
+  "packages": [
+    "npm:pi-llama-cpp"
+  ],
+  "defaultProvider": "llama-server=http://127.0.0.1:8080",
+  "defaultModel": "unsloth/Qwen3.5-9B-GGUF:Q8_0",
+  "defaultThinkingLevel": "medium",
+  "enabledModels": [
+    "openrouter/auto",
+    "openrouter/z-ai/glm-5.2",
+    "openrouter/openai/gpt-5.5",
+    "openrouter/deepseek/deepseek-v4-flash",
+    "openrouter/anthropic/claude-opus-4.8",
+    "openrouter/anthropic/claude-sonnet-5",
+    "openrouter/deepseek/deepseek-v4-pro",
+    "openrouter/google/gemini-2.5-flash-lite",
+    "openrouter/google/gemini-3.5-flash"
+  ]
+}

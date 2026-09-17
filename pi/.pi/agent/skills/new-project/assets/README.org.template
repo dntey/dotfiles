@@ -1,0 +1,32 @@
+#+title: <PROJECT NAME>
+#+author: <author>
+#+property: header-args:<LANG> :tangle yes :noweb yes
+
+* Overview
+<What this project is and why it exists. Plain prose. No implementation
+details.>
+
+* What it looks like to use
+<For a tool: describe the experience of using it. Inputs, outputs, example
+invocations. What does the user do, and what do they see?>
+
+#+begin_src <LANG> :tangle no
+# example invocation / expected output, as a comment or transcript
+#+end_src
+
+* Tools
+<Language / runtime, libraries, packages, CLI tools — and why these are
+appropriate. Decided in Phase 0.>
+
+* How it works (conceptual)
+<High-level mechanism. Still no real code. The skeleton lives in the org files
+under =src/= (or wherever logical); this section links to them.>
+
+- [[file:src/<module>.org][src/<module>.org]] :: <what this module is for>
+
+* Skeleton
+<The agreed top-level outline: main entry point decomposed into named
+sub-functions. This mirrors the org heading tree in the source org files.>
+
+* Status
+<Where we are in the phases, what was agreed, what is next.>
