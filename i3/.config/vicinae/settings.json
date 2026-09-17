@@ -57,6 +57,13 @@
       "@knoopx/store.vicinae.firefox": {
          "enabled": false
       },
+      "applications": {
+         "entrypoints": {
+            "kitty": {
+               "shortcut": "super+RETURN"
+            }
+         }
+      },
       "scripts": {
          "preferences": {
             "customDirs": [

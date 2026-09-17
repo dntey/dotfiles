@@ -66,7 +66,7 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 export VISUAL="emacsclient -c"
-export EDITOR="emacsclient -c"
+export EDITOR="nvim"
 # Keybindings
 bindkey -e
 bindkey '^p' history-search-backward

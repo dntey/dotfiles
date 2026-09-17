@@ -33,6 +33,18 @@ floating_modifier $mod
 bindsym $mod+Shift+comma reload
 bindsym $mod+Shift+semicolon restart
 bindsym Mod4+q kill
+# Layout Bindings 
+bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+button2 --whole-window floating toggle
+# change focus between tiling / floating windows
+bindsym $mod+period floating toggle
+bindsym $mod+Shift+period focus mode_toggle
+
+# Layout Orientation
+bindsym $mod+Shift+t layout tabbed
+bindsym $mod+Shift+r layout toggle split
+bindsym $mod+Shift+s layout stacked
+bindsym $mod+Shift+f fullscreen toggle
 # WORKSPACES
 set $ws0 "0: "
 # set $ws1 "1:  "
