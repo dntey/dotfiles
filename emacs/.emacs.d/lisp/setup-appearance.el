@@ -58,8 +58,8 @@
 				 ("R" . "")
 				 ("#+begin_src sh" . "")
 				 ("#+begin_src shell" . "")
-				 ("#+end_src" . "«")
-				 (":PROPERTIES:" . "«")
+				 ("#+begin_src" . "❯")
+				 ("#+end_src" . "﹉")
 				 (":PROPERTIES:" . "")
 				 (":END:" . "―")
 				 ("#+name:" . "")
@@ -80,8 +80,5 @@
 
 ;; toggle prettyfiy symbols for point at cursor
 (setq-default prettify-symbols-unprettify-at-point t)
-
-(add-to-list 'load-path (expand-file-name "nano-emacs/" user-emacs-directory))
-(require 'nano)
 
 (provide 'setup-appearance)
