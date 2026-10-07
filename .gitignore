@@ -5,4 +5,4 @@
 **.DS_Store
 /pi/.pi/agent/auth.json
 .stfolder
-/lms/.lmstudio
+# /lms/.lmstudio

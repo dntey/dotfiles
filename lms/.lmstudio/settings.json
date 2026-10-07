@@ -31,7 +31,7 @@
     "showRoleAndInsertButtons": false,
     "scrollLastMessageToTop": "scrollToTopNoLatch",
     "showTokenCountInChatListings": false,
-    "moveDeletedItemsToTrash": false,
+    "moveDeletedItemsToTrash": true,
     "sidebarSort": {
       "field": "createdAt",
       "direction": "desc"
@@ -99,7 +99,8 @@
   },
   "dismissedModals": [
     "LM Link Sidebar Button Popover",
-    "Mobile Onboarding"
+    "Mobile Onboarding",
+    "Trash Deletion Onboarding"
   ],
   "dismissedConversationSnackbars": [],
   "pre030ChatsMigrated": 3,
