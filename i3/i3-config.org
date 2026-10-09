@@ -242,7 +242,7 @@ gesture swipe right 3 i3-msg workspace prev
 I also use the four-finger swipe up to open my custom vicinae script
 #+name: gestures-windows
 #+begin_src conf :tangle .config/libinput-gestures.conf
-gesture swipe up 3 vicinae vicinae://launch/@dntey/i3-window-grid/test
+gesture swipe up 3 vicinae toggle
 #+end_src
 
 Make sure to autostart the libinput gestures on startup
@@ -624,7 +624,7 @@ exec_always --no-startup-id vicinae server --replace
 Then I have the following keybinds in i3 for different launchers:
 #+begin_src conf :noweb-ref i3-keybinds
 # Vicinae launchers
-bindsym $mod+s exec vicinae toggle
+bindsym $mod+space exec vicinae toggle
 bindsym $mod+Shift+v exec vicinae vicinae://launch/clipboard/history
 bindsym $mod+f exec vicinae vicinae://launch/files/search
 bindsym $mod+a exec vicinae vicinae://launch/calculator/history
