@@ -1,0 +1,10 @@
+[Unit]
+Description=Run weekly home snapshot
+
+[Timer]
+OnCalendar=weekly
+RandomizedDelaySec=30m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

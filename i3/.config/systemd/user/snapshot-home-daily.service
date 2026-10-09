@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily home snapshot (promote oldest hourly)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/snapshot-home promote hourly daily
+Nice=19
+IOSchedulingClass=idle
